@@ -1,0 +1,3 @@
+# Prevent search engine indexing of alpha preview site
+User-agent: *
+Disallow: /
