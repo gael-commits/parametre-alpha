@@ -1,0 +1,43 @@
+/*
+  DESIGN TOKENS - the design lane's side of the contract.
+  Scaffolded 2026-07-02. Known values are locked (brand). Everything marked
+  TODO (Fable 5) is a taste call to make on the Day 1-2 homepage slice, then
+  the rest of the design lane consumes whatever lands here.
+  Inert until a layout imports it; the live splash is unaffected.
+*/
+
+:root {
+  /* --- Brand (locked) --- */
+  --color-ink: #111111;
+  --color-paper: #ffffff;
+  --color-accent: #e63946; /* the red dot */
+
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* --- Type scale (TODO Fable 5: set the ratio + steps from the homepage) --- */
+  /* Starter modular scale placeholders; replace once the hero is designed. */
+  --step--1: 0.833rem;
+  --step-0: 1rem;
+  --step-1: 1.2rem;
+  --step-2: 1.44rem;
+  --step-3: 1.728rem;
+  --step-4: 2.074rem;
+  --step-5: 2.488rem;
+
+  /* --- Spacing scale (TODO Fable 5) --- */
+  --space-xs: 0.5rem;
+  --space-s: 1rem;
+  --space-m: 2rem;
+  --space-l: 4rem;
+  --space-xl: 8rem;
+
+  /* --- Grid: golden cannon (WDEC-004) (TODO Fable 5: derive columns/margins) --- */
+  --grid-max: 1200px;
+  --grid-gutter: var(--space-m);
+
+  /* --- Motion (GSAP-driven; TODO Fable 5: durations/eases as a system) --- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 200ms;
+  --dur-base: 500ms;
+}
