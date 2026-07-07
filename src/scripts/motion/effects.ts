@@ -66,8 +66,16 @@ export function registerEffects(): void {
         split.lines.forEach((line, i) => {
           const el = line as HTMLElement;
           // fit-content: the cover hugs the rendered text width (Lando behaviour),
-          // measured per line so it holds in FR and EN alike.
-          Object.assign(el.style, { position: 'relative', width: 'fit-content' });
+          // measured per line so it holds in FR and EN alike. nowrap is load-bearing:
+          // a line's natural width can exceed the container by its trailing space,
+          // and without it the line's last word re-wraps INSIDE the split line
+          // (seen on mobile: "...ou des" broke mid-sentence).
+          Object.assign(el.style, {
+            position: 'relative',
+            width: 'fit-content',
+            maxWidth: '100%',
+            whiteSpace: 'nowrap',
+          });
           gsap.set(el, { clipPath: 'inset(0 100% 0 0)', autoAlpha: 1 });
           const cover = document.createElement('span');
           cover.setAttribute('aria-hidden', 'true');
