@@ -39,10 +39,13 @@ sectors:
   items:
     - name: "Hospitality & events"
       line: "Hotels and restaurants, chalets and concierge services, venues and event agencies."
+      href: "/en/sectors/hospitality-events"
     - name: "Terroir & artisan producers"
       line: "Wine estates, cheesemakers, brewers and producers of the region."
+      href: "/en/sectors/terroir-producers"
     - name: "Education & training"
       line: "Private schools and training organisations."
+      href: "/en/sectors/education-training"
 closingCta:
   heading: "Let's build the kind of success that lasts."
   body: "No sales pitch, no commitment. Thirty minutes to see if parametre is the right fit, and honest feedback either way."

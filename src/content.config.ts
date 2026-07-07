@@ -54,14 +54,45 @@ const homepage = defineCollection({
       .array(z.object({ label: z.string(), blurb: z.string(), href: z.string() }))
       .optional(),
     verticalsTeaserLine: z.string().optional(),
-    // WDEC-012 (2026-07-04): the three locked sector umbrellas, presentation-only
-    // (no links yet, the sector pages do not exist). Rendered as a mono numbered-index strip.
+    // WDEC-012 (2026-07-04): the three locked sector umbrellas, rendered as a mono
+    // numbered-index strip. href added 2026-07-07 (WDEC-013 fork): the sector pages
+    // now exist, so each item may link to its umbrella page.
     sectors: z
       .object({
         intro: z.string(),
-        items: z.array(z.object({ name: z.string(), line: z.string() })),
+        items: z.array(
+          z.object({ name: z.string(), line: z.string(), href: z.string().optional() }),
+        ),
       })
       .optional(),
+    closingCta: z.object({ heading: z.string(), body: z.string(), cta: z.string() }),
+  }),
+});
+
+// Sector umbrella pages (WDEC-012 taxonomy: hospitalite-evenementiel, terroir-producteurs,
+// formation-enseignement). Added 2026-07-07 for the lane fork. Supersedes the stale
+// `verticals` collection (old WDEC-006 set) as the /secteurs/ content model; `verticals`
+// is kept for per-trade outreach landing pages later (WDEC-009 lanes).
+const sectors = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/sectors' }),
+  schema: z.object({
+    locale: z.enum(['fr', 'en']),
+    slug: z.string(),
+    order: z.number(), // matches strip order 01/02/03
+    name: z.string(), // umbrella name (matches the homepage strip)
+    heroHeadline: z.string(),
+    heroSub: z.string(),
+    heroCta: z.string(),
+    intro: z.string(), // who this page is for
+    // Verified pains with proof captions. OPTIONAL: formation has no verified
+    // evidence pre-R4 (WDEC-012), so its page carries no pains section.
+    pains: z
+      .array(z.object({ title: z.string(), body: z.string(), proof: z.string().optional() }))
+      .optional(),
+    approach: z.object({
+      heading: z.string(),
+      items: z.array(z.object({ title: z.string(), body: z.string() })),
+    }),
     closingCta: z.object({ heading: z.string(), body: z.string(), cta: z.string() }),
   }),
 });
@@ -76,4 +107,4 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { verticals, homepage, pages };
+export const collections = { verticals, homepage, pages, sectors };

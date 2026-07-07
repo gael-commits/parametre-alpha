@@ -1,0 +1,288 @@
+---
+/*
+  Sector umbrella page sections (WDEC-012 taxonomy, lane fork 2026-07-07).
+  Renders a `sectors` collection entry. Same design system as HomeSections:
+  golden-cannon centered track, mono numbered indices, hairline-topped columns,
+  red metering on the hero pivot word, entrance-crisp baseline + the two licensed
+  breathing moments (hero on load via [data-hero], approach steps via [data-steps]).
+  Zero hardcoded copy: everything comes from the content model.
+*/
+interface SectorData {
+  name: string;
+  heroHeadline: string;
+  heroSub: string;
+  heroCta: string;
+  intro: string;
+  pains?: { title: string; body: string; proof?: string }[];
+  approach: { heading: string; items: { title: string; body: string }[] };
+  closingCta: { heading: string; body: string; cta: string };
+}
+interface Props {
+  data: SectorData;
+  ctaHref: string;
+}
+const { data, ctaHref } = Astro.props;
+const idx = (n: number) => String(n).padStart(2, '0');
+
+// Red metering: exactly ONE red word, the last word of the headline (same
+// deterministic split as HomeSections; design-language section 2.3).
+const heroTrim = data.heroHeadline.trimEnd();
+const lastSpace = heroTrim.lastIndexOf(' ');
+const heroLead = lastSpace === -1 ? '' : heroTrim.slice(0, lastSpace + 1);
+const heroAccentWord = lastSpace === -1 ? heroTrim : heroTrim.slice(lastSpace + 1);
+---
+
+<!-- 1. HERO (breathing moment #1, umbrella name as mono eyebrow) -->
+<section class="shero band" data-hero>
+  <div class="shero__inner">
+    <p class="shero__eyebrow" data-hero-item>{data.name}</p>
+    <h1 class="shero__headline" data-hero-item>{heroLead}<span class="shero__accent">{heroAccentWord}</span></h1>
+    <p class="shero__sub" data-hero-item>{data.heroSub}</p>
+    <a class="shero__cta" href={ctaHref} data-hero-item>{data.heroCta}</a>
+  </div>
+</section>
+
+<!-- 2. INTRO (who this page is for) -->
+<section class="sintro band" data-reveal>
+  <p class="sintro__body">{data.intro}</p>
+</section>
+
+<!-- 3. PAINS (verified, with proof captions; omitted when absent, e.g. formation pre-R4) -->
+{
+  data.pains && data.pains.length > 0 && (
+    <section class="spains band">
+      <ul class="spains__list" data-reveal data-reveal-stagger="true">
+        {data.pains.map((p, i) => (
+          <li class="spains__item">
+            <span class="spains__index">{idx(i + 1)}</span>
+            <h2 class="spains__title">{p.title}</h2>
+            <p class="spains__body">{p.body}</p>
+            {p.proof && <p class="spains__proof">{p.proof}</p>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<!-- 4. APPROACH (breathing moment #2, mirrors the how-it-works step reveal) -->
+<section class="sapproach band">
+  <div class="sapproach__inner">
+    <h2 class="sapproach__heading" data-reveal>{data.approach.heading}</h2>
+    <ul class="sapproach__items" data-steps>
+      {
+        data.approach.items.map((item, i) => (
+          <li class="sapproach__item" data-step>
+            <span class="sapproach__num">{idx(i + 1)}</span>
+            <h3 class="sapproach__title">{item.title}</h3>
+            <p class="sapproach__body">{item.body}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<!-- 5. CLOSING CTA -->
+<section class="closing band" data-reveal>
+  <div class="closing__inner">
+    <h2 class="closing__heading">{data.closingCta.heading}</h2>
+    <p class="closing__body">{data.closingCta.body}</p>
+    <a class="closing__cta" href={ctaHref}>{data.closingCta.cta}</a>
+  </div>
+</section>
+
+<style>
+  section {
+    padding-block: var(--space-section);
+  }
+
+  /* --- 1. HERO --- */
+  .shero {
+    padding-block: var(--space-xl) var(--space-section);
+  }
+  .shero__eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-label);
+  }
+  .shero__headline {
+    margin-top: var(--space-m);
+    font-family: var(--font-display);
+    font-size: var(--text-hero);
+    font-weight: 500;
+    line-height: var(--leading-hero);
+    letter-spacing: var(--tracking-hero);
+    color: var(--color-ink);
+    max-width: var(--measure-hero);
+    text-wrap: balance;
+  }
+  .shero__accent {
+    color: var(--color-accent);
+  }
+  .shero__sub {
+    margin-top: var(--space-m);
+    font-size: var(--text-body-lg);
+    line-height: 1.5;
+    color: var(--color-text);
+    max-width: 34rem;
+  }
+  .shero__cta {
+    display: inline-block;
+    margin-top: var(--space-l);
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--color-paper);
+    background: var(--color-accent);
+    padding: 0.85rem 1.6rem;
+    border-radius: 2px;
+    transition: background-color var(--dur-fast) var(--ease-out);
+  }
+  .shero__cta:hover {
+    background: var(--color-ink);
+  }
+
+  /* --- 2. INTRO --- */
+  .sintro {
+    padding-block: 0 var(--space-section);
+  }
+  .sintro__body {
+    max-width: var(--measure-body);
+    font-size: var(--text-body-lg);
+    line-height: 1.5;
+    color: var(--color-text);
+  }
+
+  /* --- 3. PAINS (numbered, hairline-topped, proof caption in mono) --- */
+  .spains__list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-xl) var(--space-l);
+  }
+  .spains__item {
+    border-top: 1px solid var(--color-hairline);
+    padding-top: var(--space-s);
+  }
+  .spains__index {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    font-weight: 500;
+    color: var(--color-accent);
+  }
+  .spains__title {
+    margin-top: var(--space-2xs);
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--color-ink);
+  }
+  .spains__body {
+    margin-top: var(--space-xs);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    color: var(--color-text);
+  }
+  .spains__proof {
+    margin-top: var(--space-s);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    color: var(--color-label);
+  }
+
+  /* --- 4. APPROACH --- */
+  .sapproach__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 500;
+    line-height: var(--leading-tight);
+    color: var(--color-ink);
+    max-width: 26ch;
+  }
+  .sapproach__items {
+    list-style: none;
+    margin-top: var(--space-xl);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-l);
+  }
+  .sapproach__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+  .sapproach__num {
+    font-family: var(--font-mono);
+    font-size: var(--text-body-lg);
+    font-weight: 500;
+    color: var(--color-accent);
+  }
+  .sapproach__title {
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+  .sapproach__body {
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    color: var(--color-text);
+  }
+
+  /* --- 5. CLOSING CTA (same treatment as the homepage) --- */
+  .closing {
+    padding-block: var(--space-breath) var(--space-section);
+  }
+  .closing__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 500;
+    line-height: var(--leading-tight);
+    color: var(--color-ink);
+  }
+  .closing__body {
+    margin-top: var(--space-m);
+    font-size: var(--text-body-lg);
+    line-height: 1.5;
+    color: var(--color-text);
+    max-width: 34rem;
+  }
+  .closing__cta {
+    display: inline-block;
+    margin-top: var(--space-l);
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--color-paper);
+    background: var(--color-accent);
+    padding: 0.85rem 1.6rem;
+    border-radius: 2px;
+    transition: background-color var(--dur-fast) var(--ease-out);
+  }
+  .closing__cta:hover {
+    background: var(--color-ink);
+  }
+
+  /* --- Responsive: 3-across desktop, stack tablet portrait + mobile --- */
+  @media (max-width: 1023px) {
+    .spains__list {
+      grid-template-columns: 1fr;
+      gap: var(--space-l);
+    }
+    .sapproach__items {
+      grid-template-columns: 1fr;
+      gap: var(--space-l);
+    }
+  }
+</style>

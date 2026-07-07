@@ -115,6 +115,7 @@
   --measure-card: 34ch;
 
   /* --- Spacing roles --- */
+  --space-2xs: var(--p-space-2xs);
   --space-xs: var(--p-space-xs);
   --space-s: var(--p-space-s);
   --space-m: var(--p-space-m);

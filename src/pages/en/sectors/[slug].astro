@@ -1,0 +1,33 @@
+---
+// EN sector umbrella pages: /en/sectors/{hospitality-events,terroir-producers,
+// education-training}. Data-driven from the `sectors` collection (WDEC-012 set).
+import { getCollection } from 'astro:content';
+import HomeLayout from '../../../layouts/HomeLayout.astro';
+import SectorSections from '../../../components/SectorSections.astro';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('sectors', (e) => e.data.locale === 'en');
+  return entries.map((entry) => ({ params: { slug: entry.data.slug }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const data = entry.data;
+
+// FR sibling resolved by shared `order` (slugs differ per locale).
+const frEntries = await getCollection('sectors', (e) => e.data.locale === 'fr');
+const sibling = frEntries.find((e) => e.data.order === data.order);
+const altPath = sibling ? `/secteurs/${sibling.data.slug}` : '/home';
+
+const title = `parametre - ${data.name}`;
+---
+
+<HomeLayout
+  lang="en"
+  title={title}
+  description={data.heroSub}
+  selfPath={`/en/sectors/${data.slug}`}
+  altPath={altPath}
+  altLang="fr"
+>
+  <SectorSections data={data} ctaHref="/#contact" />
+</HomeLayout>

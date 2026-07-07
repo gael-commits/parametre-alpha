@@ -39,10 +39,13 @@ sectors:
   items:
     - name: "L'hospitalité & l'événementiel"
       line: "Hôtels-restaurants, chalets et conciergeries, lieux et agences événementielles."
+      href: "/secteurs/hospitalite-evenementiel"
     - name: "Le terroir & ses producteurs"
       line: "Vignerons, fromagers, brasseurs et producteurs de la région."
+      href: "/secteurs/terroir-producteurs"
     - name: "La formation & l'enseignement privé"
       line: "Écoles privées et organismes de formation."
+      href: "/secteurs/formation-enseignement"
 closingCta:
   heading: "Construisons un succès qui dure."
   body: "Pas de discours commercial, pas d'engagement. Trente minutes pour voir si parametre est le bon choix, et un avis honnête dans tous les cas."
