@@ -1,0 +1,83 @@
+---
+// Motion-lab: a REAL sector page (hospitalité, FR) for the sector-hero question:
+// same entrance as the homepage hero, or the quieter crisp sibling.
+// Sandbox-only route, killed at promotion.
+import { getCollection } from 'astro:content';
+import HomeLayout from '../../layouts/HomeLayout.astro';
+import SectorSections from '../../components/SectorSections.astro';
+import MotionLabHud from '../../components/MotionLabHud.astro';
+
+const entries = await getCollection(
+  'sectors',
+  (e) => e.data.locale === 'fr' && e.data.slug === 'hospitalite-evenementiel',
+);
+const entry = entries[0];
+if (!entry) throw new Error('sectors/fr hospitalite-evenementiel entry not found');
+
+const questions = [
+  {
+    param: 'hero',
+    label: 'héros secteur',
+    options: [
+      { v: 'same', label: 'Même entrée que le héros de la page d’accueil (actuel)' },
+      { v: 'quiet', label: 'Entrée discrète : tempo net, pas de souffle' },
+    ],
+  },
+  {
+    param: 'home',
+    label: 'motif accueil',
+    options: [
+      { v: 'a', label: 'A. Fondu montant au tempo souffle' },
+      { v: 'b', label: 'B. Révélation par bloc encre' },
+      { v: 'c', label: 'C. Lignes masquées (SplitText)' },
+    ],
+  },
+  {
+    param: 'steps',
+    label: 'approche',
+    options: [
+      { v: 'a', label: 'A. Fondu montant au tempo souffle (actuel)' },
+      { v: 'b', label: 'B. Balayage masqué par étape' },
+      { v: 'c', label: 'C. Étapes nettes, le souffle passe au titre de clôture' },
+    ],
+  },
+];
+---
+
+<HomeLayout
+  lang="fr"
+  title="parametre - motion lab - secteur"
+  description="Laboratoire de mouvement : le héros des pages secteurs."
+  selfPath="/motion-lab/secteur"
+  altPath="/en/home"
+  altLang="en"
+  motion="none"
+>
+  <SectorSections data={entry.data} ctaHref="/#contact" />
+  <MotionLabHud questions={questions} />
+</HomeLayout>
+
+<script>
+  import { initMotion, type SectorPicks } from '../../scripts/motion/index';
+
+  const q = new URLSearchParams(location.search);
+  const pick = <T extends string>(k: string, allowed: readonly T[]): T => {
+    const v = q.get(k) as T | null;
+    return v && allowed.includes(v) ? v : allowed[0];
+  };
+  const picks: SectorPicks = {
+    hero: pick('hero', ['same', 'quiet'] as const),
+    homeHero: pick('home', ['a', 'b', 'c'] as const),
+    steps: pick('steps', ['a', 'b', 'c'] as const),
+    reveal: pick('reveal', ['a', 'b'] as const),
+    mark: pick('mark', ['a', 'b', 'c'] as const),
+    footer: pick('footer', ['a', 'b'] as const),
+  };
+  let handle = initMotion({ page: 'sector', picks });
+  (window as unknown as { __motionLab: { replay(): void } }).__motionLab = {
+    replay() {
+      handle.revert();
+      handle = initMotion({ page: 'sector', picks });
+    },
+  };
+</script>

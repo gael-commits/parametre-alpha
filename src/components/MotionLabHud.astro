@@ -1,0 +1,118 @@
+---
+/*
+  Motion-lab HUD (sandbox-only chrome, killed at promotion). A fixed mono bar listing
+  each open question's candidates as links (preserving the other picks in the query
+  string) plus a replay control. The FIRST option of each group is the default.
+*/
+interface Option {
+  v: string;
+  label: string;
+}
+interface Question {
+  param: string;
+  label: string;
+  options: Option[];
+}
+interface Props {
+  questions: Question[];
+}
+const { questions } = Astro.props;
+---
+
+<aside class="labhud" aria-label="Contrôles du laboratoire de mouvement">
+  <a class="labhud__back" href="/motion-lab/">motion-lab</a>
+  {
+    questions.map((q) => (
+      <span class="labhud__group" data-param={q.param} data-default={q.options[0].v}>
+        <span class="labhud__label">{q.label}</span>
+        {q.options.map((o) => (
+          <a class="labhud__opt" data-v={o.v} href="#" title={o.label}>
+            {o.v.toUpperCase()}
+          </a>
+        ))}
+      </span>
+    ))
+  }
+  <button class="labhud__replay" type="button">rejouer</button>
+</aside>
+
+<script>
+  const hud = document.querySelector('.labhud');
+  if (hud) {
+    hud.querySelectorAll<HTMLElement>('.labhud__group').forEach((g) => {
+      const param = g.dataset.param!;
+      const current = new URLSearchParams(location.search).get(param) || g.dataset.default!;
+      g.querySelectorAll<HTMLAnchorElement>('.labhud__opt').forEach((a) => {
+        const v = a.dataset.v!;
+        const p = new URLSearchParams(location.search);
+        p.set(param, v);
+        a.href = `${location.pathname}?${p.toString()}`;
+        if (v === current) a.classList.add('is-active');
+      });
+    });
+    hud.querySelector('.labhud__replay')?.addEventListener('click', () => {
+      (window as unknown as { __motionLab?: { replay(): void } }).__motionLab?.replay();
+    });
+  }
+</script>
+
+<style>
+  .labhud {
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    z-index: 50;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    padding: 0.6rem var(--grid-inset);
+    background: var(--color-paper);
+    border-top: 1px solid var(--color-hairline);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    color: var(--color-label);
+  }
+  .labhud__back {
+    color: var(--color-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-hairline);
+  }
+  .labhud__group {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    white-space: nowrap;
+  }
+  .labhud__label {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.65rem;
+  }
+  .labhud__opt {
+    color: var(--color-label);
+    text-decoration: none;
+    padding: 0 0.15rem;
+    border-bottom: 1px solid transparent;
+  }
+  .labhud__opt:hover {
+    color: var(--color-ink);
+  }
+  .labhud__opt.is-active {
+    color: var(--color-ink);
+    border-bottom-color: var(--color-ink);
+  }
+  .labhud__replay {
+    margin-left: auto;
+    font: inherit;
+    color: var(--color-ink);
+    background: none;
+    border: 1px solid var(--color-hairline);
+    border-radius: 2px;
+    padding: 0.25rem 0.7rem;
+    cursor: pointer;
+  }
+  .labhud__replay:hover {
+    border-color: var(--color-ink);
+  }
+</style>

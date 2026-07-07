@@ -1,0 +1,95 @@
+---
+// Motion-lab: the REAL homepage (FR content, same sections) with candidate choreographies
+// selected by query string. Sandbox-only route, killed at promotion. Noindex via HomeLayout.
+import { getEntry } from 'astro:content';
+import HomeLayout from '../../layouts/HomeLayout.astro';
+import HomeSections from '../../components/HomeSections.astro';
+import MotionLabHud from '../../components/MotionLabHud.astro';
+
+const entry = await getEntry('homepage', 'fr');
+if (!entry) throw new Error('homepage/fr content entry not found');
+
+// First option of each group = the current live default.
+const questions = [
+  {
+    param: 'hero',
+    label: 'héros',
+    options: [
+      { v: 'a', label: 'A. Fondu montant au tempo souffle (traitement actuel)' },
+      { v: 'b', label: 'B. Révélation par bloc encre sur le titre' },
+      { v: 'c', label: 'C. Lignes masquées qui montent (SplitText)' },
+    ],
+  },
+  {
+    param: 'steps',
+    label: 'étapes',
+    options: [
+      { v: 'a', label: 'A. Fondu montant au tempo souffle (traitement actuel)' },
+      { v: 'b', label: 'B. Balayage masqué par étape' },
+      { v: 'c', label: 'C. Étapes nettes, le souffle passe au titre de clôture' },
+    ],
+  },
+  {
+    param: 'reveal',
+    label: 'défilement',
+    options: [
+      { v: 'a', label: 'A. Uniforme, 12px pour toutes les sections (actuel)' },
+      { v: 'b', label: 'B. Pondéré par section : bandes légères en fondu seul' },
+    ],
+  },
+  {
+    param: 'mark',
+    label: 'marque',
+    options: [
+      { v: 'a', label: 'A. Le deux-points se pose par échelle (actuel)' },
+      { v: 'b', label: 'B. Fondu type encre qui sèche, sans échelle' },
+      { v: 'c', label: 'C. Statique, aucune entrée' },
+    ],
+  },
+  {
+    param: 'footer',
+    label: 'pied',
+    options: [
+      { v: 'a', label: 'A. Immobile (actuel)' },
+      { v: 'b', label: 'B. Une entrée nette du bloc pied de page' },
+    ],
+  },
+];
+---
+
+<HomeLayout
+  lang="fr"
+  title="parametre - motion lab - accueil"
+  description="Laboratoire de mouvement : candidats A/B/C sur la vraie page d'accueil."
+  selfPath="/motion-lab/home"
+  altPath="/en/home"
+  altLang="en"
+  motion="none"
+>
+  <HomeSections data={entry.data} ctaHref="/#contact" />
+  <MotionLabHud questions={questions} />
+</HomeLayout>
+
+<script>
+  import { initMotion, type HomePicks } from '../../scripts/motion/index';
+
+  const q = new URLSearchParams(location.search);
+  const pick = <T extends string>(k: string, allowed: readonly T[]): T => {
+    const v = q.get(k) as T | null;
+    return v && allowed.includes(v) ? v : allowed[0];
+  };
+  const picks: HomePicks = {
+    hero: pick('hero', ['a', 'b', 'c'] as const),
+    steps: pick('steps', ['a', 'b', 'c'] as const),
+    reveal: pick('reveal', ['a', 'b'] as const),
+    mark: pick('mark', ['a', 'b', 'c'] as const),
+    footer: pick('footer', ['a', 'b'] as const),
+  };
+  let handle = initMotion({ page: 'home', picks });
+  (window as unknown as { __motionLab: { replay(): void } }).__motionLab = {
+    replay() {
+      handle.revert();
+      handle = initMotion({ page: 'home', picks });
+    },
+  };
+</script>

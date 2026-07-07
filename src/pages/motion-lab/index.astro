@@ -1,0 +1,191 @@
+---
+// Motion-lab index: the six taste questions of the 2026-07-07 motion deep dive, each with
+// its labeled candidates on the REAL pages. Sandbox-only route, killed at promotion.
+// FR only, noindex (via HomeLayout), plain-labeled.
+import HomeLayout from '../../layouts/HomeLayout.astro';
+
+const questions = [
+  {
+    n: '01',
+    title: 'Le héros de la page d’accueil',
+    note: 'Premier des deux moments de souffle. Le fondu actuel, un bloc encre, ou des lignes masquées.',
+    links: [
+      { label: 'A. Fondu montant, tempo souffle (actuel)', href: '/motion-lab/home?hero=a' },
+      { label: 'B. Révélation par bloc encre', href: '/motion-lab/home?hero=b' },
+      { label: 'C. Lignes masquées qui montent (SplitText)', href: '/motion-lab/home?hero=c' },
+    ],
+  },
+  {
+    n: '02',
+    title: 'Les étapes (second moment de souffle)',
+    note: 'Descendre jusqu’à la bande « comment on travaille ». Le candidat C rend les étapes nettes et déplace le souffle vers le titre de clôture.',
+    links: [
+      { label: 'A. Fondu montant, tempo souffle (actuel)', href: '/motion-lab/home?steps=a' },
+      { label: 'B. Balayage masqué par étape', href: '/motion-lab/home?steps=b' },
+      { label: 'C. Étapes nettes, souffle sur la clôture', href: '/motion-lab/home?steps=c' },
+    ],
+  },
+  {
+    n: '03',
+    title: 'La marque et le pied de page',
+    note: 'Le deux-points rouge à l’arrivée, et la question d’un moment de pied de page.',
+    links: [
+      { label: 'Marque A. Pose par échelle (actuel)', href: '/motion-lab/home?mark=a' },
+      { label: 'Marque B. Encre qui sèche, sans échelle', href: '/motion-lab/home?mark=b' },
+      { label: 'Marque C. Statique', href: '/motion-lab/home?mark=c' },
+      { label: 'Pied B. Une entrée nette du bloc', href: '/motion-lab/home?footer=b' },
+    ],
+  },
+  {
+    n: '04',
+    title: 'Les révélations au défilement',
+    note: 'Uniforme comme aujourd’hui, ou pondéré : les bandes légères (preuves, secteurs) en fondu seul, la prose garde la montée.',
+    links: [
+      { label: 'A. Uniforme, 12px partout (actuel)', href: '/motion-lab/home?reveal=a' },
+      { label: 'B. Pondéré par le rôle de la section', href: '/motion-lab/home?reveal=b' },
+    ],
+  },
+  {
+    n: '05',
+    title: 'Le héros des pages secteurs',
+    note: 'La même entrée que l’accueil, ou une entrée discrète au tempo net.',
+    links: [
+      { label: 'Même entrée que l’accueil (actuel)', href: '/motion-lab/secteur?hero=same' },
+      { label: 'Entrée discrète, sans souffle', href: '/motion-lab/secteur?hero=quiet' },
+    ],
+  },
+  {
+    n: '06',
+    title: 'Les transitions entre pages',
+    note: 'Candidat A : la navigation actuelle, nette (aller-retour entre /home et une page secteur). Candidat B : le fondu croisé d’Astro, sur deux pages de démonstration.',
+    links: [
+      { label: 'B. Démonstration du fondu croisé', href: '/motion-lab/vt-un' },
+      { label: 'A. Référence : la page d’accueil telle quelle', href: '/home' },
+    ],
+  },
+];
+---
+
+<HomeLayout
+  lang="fr"
+  title="parametre - motion lab"
+  description="Laboratoire de mouvement : les candidats du 7 juillet 2026."
+  selfPath="/motion-lab/"
+  altPath="/en/home"
+  altLang="en"
+  motion="none"
+>
+  <section class="lab band">
+    <div class="lab__inner">
+      <p class="lab__eyebrow">laboratoire de mouvement, 7 juillet 2026</p>
+      <h1 class="lab__title">Six questions, des candidats à regarder en vrai.</h1>
+      <p class="lab__how">
+        Chaque lien ouvre la vraie page avec le candidat actif. La barre en bas de page permet de
+        changer de candidat et de rejouer l'entrée. Regarder chaque candidat aussi en mobile
+        (375px) : déclencheurs par élément, distances plus courtes, départs plus tardifs. Le mode
+        « réduire les animations » du système doit tout figer, contenu visible.
+      </p>
+      <ol class="lab__list">
+        {
+          questions.map((q) => (
+            <li class="lab__item">
+              <span class="lab__index">{q.n}</span>
+              <h2 class="lab__q">{q.title}</h2>
+              <p class="lab__note">{q.note}</p>
+              <ul class="lab__links">
+                {q.links.map((l) => (
+                  <li>
+                    <a href={l.href}>{l.label}</a>
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+</HomeLayout>
+
+<style>
+  .lab {
+    padding-block: var(--space-xl) var(--space-section);
+  }
+  .lab__eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-label);
+  }
+  .lab__title {
+    margin-top: var(--space-m);
+    font-family: var(--font-display);
+    font-size: var(--text-h1);
+    font-weight: 500;
+    line-height: var(--leading-tight);
+    color: var(--color-ink);
+    max-width: 24ch;
+  }
+  .lab__how {
+    margin-top: var(--space-m);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    color: var(--color-text);
+    max-width: var(--measure-body);
+  }
+  .lab__list {
+    list-style: none;
+    margin-top: var(--space-xl);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xl) var(--space-l);
+  }
+  .lab__item {
+    border-top: 1px solid var(--color-hairline);
+    padding-top: var(--space-s);
+  }
+  .lab__index {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    font-weight: 500;
+    color: var(--color-accent);
+  }
+  .lab__q {
+    margin-top: var(--space-2xs);
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--color-ink);
+  }
+  .lab__note {
+    margin-top: var(--space-xs);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    color: var(--color-text);
+  }
+  .lab__links {
+    list-style: none;
+    margin-top: var(--space-s);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+  }
+  .lab__links a {
+    color: var(--color-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-hairline);
+  }
+  .lab__links a:hover {
+    border-color: var(--color-ink);
+  }
+  @media (max-width: 1023px) {
+    .lab__list {
+      grid-template-columns: 1fr;
+      gap: var(--space-l);
+    }
+  }
+</style>

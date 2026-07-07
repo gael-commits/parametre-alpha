@@ -15,8 +15,11 @@ interface Props {
   selfPath: string;
   altPath: string;
   altLang: 'fr' | 'en';
+  /* Which page choreography initMotion runs. 'none' = the page brings its own init
+     (the /motion-lab sandbox reads candidate picks from the query string). */
+  motion?: 'home' | 'sector' | 'none';
 }
-const { lang, title, description, selfPath, altPath, altLang } = Astro.props;
+const { lang, title, description, selfPath, altPath, altLang, motion = 'home' } = Astro.props;
 const ogLocale = lang === 'fr' ? 'fr_FR' : 'en_US';
 
 const chrome = {
@@ -76,7 +79,7 @@ const legalHref = lang === 'fr' ? '/mentions-legales' : '/en/legal';
       })();
     </script>
   </head>
-  <body>
+  <body data-motion-page={motion}>
     <header class="site-header">
       <BinomeMark href={selfPath} size="md" />
       <a class="lang-toggle" href={altPath} title={chrome.toggleTitle}>{chrome.toggleLabel}</a>
@@ -99,8 +102,9 @@ const legalHref = lang === 'fr' ? '/mentions-legales' : '/en/legal';
     </footer>
 
     <script>
-      import { initMotion } from '../scripts/motion';
-      initMotion();
+      import { initMotion } from '../scripts/motion/index';
+      const page = document.body.dataset.motionPage;
+      if (page === 'home' || page === 'sector') initMotion({ page });
     </script>
   </body>
 </html>

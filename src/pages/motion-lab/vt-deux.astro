@@ -1,0 +1,98 @@
+---
+// Motion-lab: view-transitions demo, page 2 of 2. See vt-un.astro.
+import '../../styles/tokens.css';
+import { ClientRouter } from 'astro:transitions';
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>parametre - motion lab - transition 2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <ClientRouter />
+  </head>
+  <body>
+    <main class="vt">
+      <p class="vt__eyebrow">transition de vue, page 2 sur 2</p>
+      <h1 class="vt__headline">Une présence en ligne à la hauteur de votre <span class="vt__accent">maison</span>.</h1>
+      <p class="vt__body">
+        Faites l'aller-retour plusieurs fois. La question à trancher : ce fondu croisé sert-il la
+        sobriété de la charte, ou la navigation nette dit-elle mieux la certitude du site.
+      </p>
+      <nav class="vt__nav">
+        <a href="/motion-lab/vt-un">Vers la page 1</a>
+        <a href="/motion-lab/" data-astro-reload>Retour au laboratoire</a>
+      </nav>
+    </main>
+  </body>
+</html>
+
+<style>
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background: var(--color-paper);
+    line-height: var(--leading-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  .vt {
+    max-width: var(--grid-max);
+    margin: 0 auto;
+    padding: var(--space-breath) var(--grid-inset);
+  }
+  .vt__eyebrow {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-label);
+  }
+  .vt__headline {
+    margin-top: var(--space-m);
+    font-family: var(--font-display);
+    font-size: var(--text-hero);
+    font-weight: 500;
+    line-height: var(--leading-hero);
+    letter-spacing: var(--tracking-hero);
+    color: var(--color-ink);
+    max-width: var(--measure-hero);
+    text-wrap: balance;
+  }
+  .vt__accent {
+    color: var(--color-accent);
+  }
+  .vt__body {
+    margin-top: var(--space-m);
+    font-size: var(--text-body-lg);
+    line-height: 1.5;
+    max-width: 34rem;
+  }
+  .vt__nav {
+    margin-top: var(--space-l);
+    display: flex;
+    gap: var(--space-m);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+  }
+  .vt__nav a {
+    color: var(--color-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-hairline);
+  }
+  .vt__nav a:hover {
+    border-color: var(--color-ink);
+  }
+</style>
