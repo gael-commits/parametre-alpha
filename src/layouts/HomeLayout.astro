@@ -139,8 +139,11 @@ const legalHref = lang === 'fr' ? '/mentions-legales' : '/en/legal';
     color: inherit;
   }
 
+  /* Ink, not red: a text selection paints every selected glyph, and red across a page
+     of selected text reads as a highlighter bug (Gael, 2026-07-07) and violates the
+     red-metering spirit (red is never decorative, design-language 2.3). */
   ::selection {
-    background: var(--color-accent);
+    background: var(--color-ink);
     color: var(--color-paper);
   }
 
