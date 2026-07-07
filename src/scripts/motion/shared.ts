@@ -156,11 +156,14 @@ export function baselineReveals(pick: RevealPick, ctx: ChoreoCtx, skipClosing = 
           if (ctas.length)
             gsap.effects.maskReveal(ctas, { breathe: false, delay: at + 0.35 });
         };
-        const chained = loadChainDelay(el, ctx);
+        // Trigger on the HEADING, not the section: breathing-band sections carry up to
+        // 10.5rem of top padding, and a section-box trigger fires while the content is
+        // still below the fold (the "animated before we get to it" bug).
+        const chained = loadChainDelay(heading, ctx);
         if (chained !== null) fire(chained);
         else
           ScrollTrigger.create({
-            trigger: el,
+            trigger: heading,
             start: ctx.mobile ? START.mobileItem : START.base,
             once: true,
             onEnter: () => fire(0),
@@ -199,13 +202,16 @@ export function baselineReveals(pick: RevealPick, ctx: ChoreoCtx, skipClosing = 
         return;
       }
     }
-    const chained = loadChainDelay(el, ctx);
+    // Same padding trap as above: probe/trigger on the first content child when the
+    // [data-reveal] element is a padded section box.
+    const probe = (el.firstElementChild as HTMLElement | null) ?? el;
+    const chained = loadChainDelay(probe, ctx);
     if (chained !== null) {
       gsap.effects.revealUp(children, { distance, stagger: stagger ? 0.09 : 0, delay: chained });
       return;
     }
     ScrollTrigger.create({
-      trigger: el,
+      trigger: probe,
       start: START.base,
       once: true,
       onEnter: () => gsap.effects.revealUp(children, { distance, stagger: stagger ? 0.09 : 0 }),
