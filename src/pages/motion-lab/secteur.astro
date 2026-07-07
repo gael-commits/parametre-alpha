@@ -19,8 +19,8 @@ const questions = [
     param: 'hero',
     label: 'héros secteur',
     options: [
-      { v: 'quiet', label: 'Entrée discrète, tempo net (VERROUILLÉ, Gael 2026-07-07)' },
-      { v: 'same', label: 'Même entrée que le héros de la page d’accueil (comparaison)' },
+      { v: 'same', label: 'Même entrée que l’accueil : bloc par ligne (VERROUILLÉ, Gael 2026-07-07)' },
+      { v: 'quiet', label: 'Entrée discrète, tempo net (comparaison)' },
     ],
   },
   {
@@ -67,11 +67,11 @@ const questions = [
     return v && allowed.includes(v) ? v : allowed[0];
   };
   const picks: SectorPicks = {
-    hero: pick('hero', ['quiet', 'same'] as const),
+    hero: pick('hero', ['same', 'quiet'] as const),
     homeHero: pick('home', ['b', 'a', 'c'] as const),
     follow: pick('suite', ['a', 'b', 'c'] as const),
     steps: pick('steps', ['a', 'd', 'b', 'c'] as const),
-    reveal: pick('reveal', ['a', 'b'] as const),
+    reveal: pick('reveal', ['c', 'a', 'b'] as const),
     mark: pick('mark', ['a', 'b', 'c'] as const),
     footer: pick('footer', ['a', 'b'] as const),
   };

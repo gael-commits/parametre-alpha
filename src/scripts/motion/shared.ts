@@ -18,7 +18,7 @@ export interface ChoreoCtx {
 export type HeroPick = 'a' | 'b' | 'c'; // a fade-up breathe | b ink block reveal (LOCKED, Gael 2026-07-07) | c SplitText lines
 export type FollowPick = 'a' | 'b' | 'c'; // hero followers (sub + CTA): a crisp fade-up | b masked line rise | c mini block reveal
 export type StepsPick = 'a' | 'b' | 'c' | 'd'; // a fade-up breathe | b mask wipe | c crisp steps + closing heading breathes | d masked line rise
-export type RevealPick = 'a' | 'b'; // a uniform 12px | b differentiated by section weight
+export type RevealPick = 'a' | 'b' | 'c'; // a uniform 12px | b differentiated by weight | c headings block-reveal + body offset
 export type MarkPick = 'a' | 'b' | 'c'; // a scale settle | b ink-dry fade | c static
 export type FooterPick = 'a' | 'b'; // a still | b one crisp reveal
 
@@ -43,25 +43,28 @@ export function heroMoment(
 
   // The followers (sub + CTA) enter as part of the same hero gesture, offset past the
   // headline's first phase. One hero moment in the breathing count, not three.
+  // The CTA button always wipes its fill in (maskReveal crisp): a filled button fading
+  // was the flat note Gael flagged; the wipe is the button's own gesture on every variant.
   const followers = (delay: number) => {
     if (!rest.length) return;
+    const cta = rest[rest.length - 1];
+    const texts = rest.slice(0, -1);
     if (follow === 'b') {
-      // Masked line rise at crisp tempo on the text lines; the CTA button (a filled
-      // element, no line mask possible) closes with the crisp fade.
-      const cta = rest[rest.length - 1];
-      const texts = rest.slice(0, -1);
+      // Masked line rise at crisp tempo on the text lines.
       if (texts.length) {
         gsap.set(texts, { autoAlpha: 1 });
         gsap.effects.linesUp(texts, { breathe: false, delay, stagger: 0.07 });
       }
-      gsap.effects.revealUp(cta, { delay: delay + 0.15 });
     } else if (follow === 'c') {
       // Mini block reveals echoing the headline (Lando uses tint blocks on body text).
-      gsap.set(rest, { autoAlpha: 1 });
-      gsap.effects.blockReveal(rest, { delay, stagger: 0.12 });
-    } else {
-      gsap.effects.revealUp(rest, { stagger: 0.09, delay });
+      if (texts.length) {
+        gsap.set(texts, { autoAlpha: 1 });
+        gsap.effects.blockReveal(texts, { breathe: false, delay, stagger: 0.12 });
+      }
+    } else if (texts.length) {
+      gsap.effects.revealUp(texts, { stagger: 0.09, delay });
     }
+    gsap.effects.maskReveal(cta, { breathe: false, delay: delay + 0.2 });
   };
 
   if (pick === 'b' && headline) {
@@ -100,6 +103,48 @@ export function baselineReveals(pick: RevealPick, ctx: ChoreoCtx, skipClosing = 
   reveals.forEach((el) => {
     if (skipClosing && el.classList.contains('closing')) return;
     const stagger = el.dataset.revealStagger === 'true';
+
+    // Pick c (Gael's direction 2026-07-07): every section HEADING takes the block
+    // reveal at crisp tempo (the hero gesture as the heading signature, baseline
+    // pattern because the tempo is crisp, not breathing), slightly offset from its
+    // body, which enters differently (fade-up; CTAs wipe their fill).
+    if (pick === 'c' && !stagger) {
+      // Structural headings only (section level or one wrapper deep) - never headings
+      // inside list items (the sector strip's h3s belong to their card's flow).
+      const heading = el.matches('h1, h2, h3')
+        ? el
+        : el.querySelector<HTMLElement>(
+            ':scope > h1, :scope > h2, :scope > h3, :scope > * > h1, :scope > * > h2, :scope > * > h3',
+          );
+      if (heading) {
+        // The body = the heading's SIBLINGS (same wrapper), not the section's wrapper div.
+        const body =
+          heading === el
+            ? []
+            : (Array.from(heading.parentElement!.children) as HTMLElement[]).filter(
+                (ch) => ch !== heading,
+              );
+        const ctas = body.filter((b) => b.matches('a'));
+        const prose = body.filter((b) => !b.matches('a'));
+        gsap.set(el, { autoAlpha: 1, y: 0 });
+        gsap.set(heading, { autoAlpha: 0 });
+        if (prose.length) gsap.set(prose, { autoAlpha: 0, y: ctx.mobile ? 8 : 12 });
+        ScrollTrigger.create({
+          trigger: el,
+          start: ctx.mobile ? START.mobileItem : START.base,
+          once: true,
+          onEnter: () => {
+            gsap.set(heading, { autoAlpha: 1 });
+            gsap.effects.blockReveal(heading, { breathe: false, stagger: 0.1 });
+            if (prose.length)
+              gsap.effects.revealUp(prose, { delay: 0.2, stagger: 0.08 });
+            if (ctas.length) gsap.effects.maskReveal(ctas, { breathe: false, delay: 0.35 });
+          },
+        });
+        return;
+      }
+    }
+
     const children = stagger ? (Array.from(el.children) as HTMLElement[]) : [el];
     // Differentiated weights (pick b): metadata bands (proof strip, sector strip) fade
     // in place; prose sections keep the rise. Weight is semantic (section role), never
@@ -216,6 +261,40 @@ export function footerMoment(pick: FooterPick, ctx: ChoreoCtx): void {
     start: ctx.mobile ? START.mobileItem : 'top 92%',
     once: true,
     onEnter: () => gsap.effects.revealUp(children, { distance: 8, stagger: 0.08 }),
+  });
+}
+
+// Letter-roll hover on the CTA buttons (the Lando text-hover: every letter in a span,
+// the label rolls up and its duplicate rolls in from below, per-letter delay). Pure CSS
+// does the animation (HomeLayout, gated behind prefers-reduced-motion); this only builds
+// the DOM once. No-JS: buttons stay plain text.
+export function initButtonRoll(): void {
+  const buttons = document.querySelectorAll<HTMLElement>('.hero__cta, .closing__cta, .shero__cta');
+  buttons.forEach((btn) => {
+    if (btn.dataset.roll) return;
+    const label = btn.textContent?.trim() ?? '';
+    if (!label) return;
+    btn.dataset.roll = 'true';
+    btn.setAttribute('aria-label', label);
+    const layer = (cls: string) => {
+      const s = document.createElement('span');
+      s.className = `roll__layer ${cls}`;
+      s.setAttribute('aria-hidden', 'true');
+      [...label].forEach((ch, i) => {
+        const c = document.createElement('span');
+        c.className = 'roll__ch';
+        c.style.setProperty('--i', String(i));
+        c.textContent = ch === ' ' ? ' ' : ch;
+        s.appendChild(c);
+      });
+      return s;
+    };
+    btn.textContent = '';
+    const wrap = document.createElement('span');
+    wrap.className = 'roll';
+    wrap.appendChild(layer('roll__a'));
+    wrap.appendChild(layer('roll__b'));
+    btn.appendChild(wrap);
   });
 }
 

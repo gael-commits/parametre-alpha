@@ -16,6 +16,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { loadTokens, BP } from './tokens';
 import { registerEffects, revertSplits } from './effects';
+import { initButtonRoll } from './shared';
 import { homeChoreography, HOME_DEFAULTS, type HomePicks } from './home';
 import { sectorChoreography, SECTOR_DEFAULTS, type SectorPicks } from './sector';
 
@@ -36,6 +37,8 @@ export function initMotion(args: InitArgs): MotionHandle {
   gsap.registerPlugin(ScrollTrigger);
   loadTokens();
   registerEffects();
+  // Hover affordance, breakpoint-independent (CSS gates it behind reduced-motion).
+  initButtonRoll();
 
   // Wait for fonts before choreographing: SplitText line measurements (blockReveal,
   // linesUp) are only correct against the final faces. Resolves in ms on a warm cache.

@@ -238,6 +238,44 @@ const legalHref = lang === 'fr' ? '/mentions-legales' : '/en/legal';
     }
   }
 
+  /* --- CTA letter-roll hover (Lando text-hover; DOM built by initButtonRoll).
+         The label rolls up, its duplicate rolls in from below, per-letter delay.
+         Reduced motion: letters hold still (transform never applies). --- */
+  [data-roll] .roll {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+  }
+  [data-roll] .roll__layer {
+    display: block;
+    white-space: pre;
+  }
+  [data-roll] .roll__b {
+    position: absolute;
+    inset: 0;
+  }
+  [data-roll] .roll__ch {
+    display: inline-block;
+    white-space: pre;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    [data-roll] .roll__ch {
+      transition: transform var(--dur-base) var(--ease-out);
+      transition-delay: calc(var(--i) * 0.018s);
+    }
+    [data-roll] .roll__b .roll__ch {
+      transform: translateY(100%);
+    }
+    [data-roll]:hover .roll__a .roll__ch,
+    [data-roll]:focus-visible .roll__a .roll__ch {
+      transform: translateY(-100%);
+    }
+    [data-roll]:hover .roll__b .roll__ch,
+    [data-roll]:focus-visible .roll__b .roll__ch {
+      transform: translateY(0);
+    }
+  }
+
   @media (max-width: 768px) {
     .site-footer__meta {
       flex-direction: column;

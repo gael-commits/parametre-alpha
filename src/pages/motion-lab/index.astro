@@ -40,28 +40,30 @@ const questions = [
   {
     n: '04',
     title: 'Les révélations au défilement',
-    note: 'Uniforme comme aujourd’hui, ou pondéré : les bandes légères (preuves, secteurs) en fondu seul, la prose garde la montée.',
+    note: 'C, la direction du 7 juillet au soir : chaque titre de section reprend le bloc encre au tempo net, légèrement décalé de son corps de texte; le corps entre en fondu; les boutons balaient leur couleur.',
     links: [
-      { label: 'A. Uniforme, 12px partout (actuel)', href: '/motion-lab/home?reveal=a' },
+      { label: 'C. Titres en bloc, corps décalé (direction)', href: '/motion-lab/home?reveal=c' },
+      { label: 'A. Uniforme, 12px partout (ancien)', href: '/motion-lab/home?reveal=a' },
       { label: 'B. Pondéré par le rôle de la section', href: '/motion-lab/home?reveal=b' },
     ],
   },
   {
     n: '05',
     title: 'Le héros des pages secteurs',
-    note: 'Verrouillé : entrée discrète au tempo net. La comparaison reste disponible.',
+    note: 'Verrouillé : même entrée que l’accueil, le bloc par ligne. La comparaison discrète reste disponible.',
     links: [
-      { label: 'Entrée discrète (verrouillé)', href: '/motion-lab/secteur?hero=quiet' },
-      { label: 'Même entrée que l’accueil (comparaison)', href: '/motion-lab/secteur?hero=same' },
+      { label: 'Même entrée que l’accueil (verrouillé)', href: '/motion-lab/secteur?hero=same' },
+      { label: 'Entrée discrète (comparaison)', href: '/motion-lab/secteur?hero=quiet' },
     ],
   },
   {
     n: '06',
     title: 'Les transitions entre pages',
-    note: 'Candidat A : la navigation actuelle, nette (aller-retour entre /home et une page secteur). Candidat B : le fondu croisé d’Astro, sur deux pages de démonstration.',
+    note: 'À creuser (Gael, 7 juillet au soir). Deux modes sur la paire de démonstration : le fondu croisé d’Astro, et un balayage encre de gauche à droite. Le vrai rideau façon Lando (panneau qui couvre, échange, découvre) est le chantier de l’étape 2.',
     links: [
-      { label: 'B. Démonstration du fondu croisé', href: '/motion-lab/vt-un' },
-      { label: 'A. Référence : la page d’accueil telle quelle', href: '/home' },
+      { label: 'Fondu croisé', href: '/motion-lab/vt-un' },
+      { label: 'Balayage encre', href: '/motion-lab/vt-un?mode=balayage' },
+      { label: 'Référence : navigation nette actuelle', href: '/home' },
     ],
   },
 ];

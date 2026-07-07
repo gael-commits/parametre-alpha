@@ -82,22 +82,25 @@ export function registerEffects(): void {
           el.appendChild(cover);
           gsap.set(cover, { scaleX: 1 });
           const at = i * c.stagger;
-          tl.to(el, { clipPath: 'inset(0 0% 0 0)', duration: T.durBreathe, ease: T.easeOut }, at);
+          // breathe:true = the hero moment (breathing tempo); breathe:false = the same
+          // gesture at crisp tempo for section headings (baseline pattern, not a slot).
+          const phase = c.breathe ? T.durBreathe : T.durBase;
+          tl.to(el, { clipPath: 'inset(0 0% 0 0)', duration: phase, ease: T.easeOut }, at);
           tl.to(
             cover,
             {
               scaleX: 0,
-              duration: T.durBreathe,
+              duration: phase,
               ease: T.easeWipe,
               onComplete: () => cover.remove(),
             },
-            at + T.durBreathe / 2,
+            at + phase / 2,
           );
         });
       });
       return tl;
     },
-    defaults: { stagger: 0.15, delay: 0, color: 'var(--color-ink)' },
+    defaults: { stagger: 0.15, delay: 0, color: 'var(--color-ink)', breathe: true },
   });
 
   // maskReveal - clip-path wipe left-to-right, no extra DOM. The initial state pins

@@ -28,12 +28,34 @@ import { ClientRouter } from 'astro:transitions';
         sobriété de la charte, ou la navigation nette dit-elle mieux la certitude du site.
       </p>
       <nav class="vt__nav">
-        <a href="/motion-lab/vt-un">Vers la page 1</a>
+        <a href="/motion-lab/vt-un" data-vt-nav>Vers la page 1</a>
         <a href="/motion-lab/" data-astro-reload>Retour au laboratoire</a>
       </nav>
+      <p class="vt__modes">
+        Mode : <a href="/motion-lab/vt-deux" data-vt-mode="fondu">fondu croisé</a> ·
+        <a href="/motion-lab/vt-deux?mode=balayage" data-vt-mode="balayage">balayage encre</a>
+      </p>
     </main>
+    <script src="../../scripts/vt-mode.ts"></script>
   </body>
 </html>
+
+<style is:global>
+  html[data-vt='balayage']::view-transition-old(root) {
+    animation: none;
+  }
+  html[data-vt='balayage']::view-transition-new(root) {
+    animation: vt-wipe 0.6s cubic-bezier(0.65, 0, 0.35, 1) both;
+  }
+  @keyframes vt-wipe {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0% 0 0);
+    }
+  }
+</style>
 
 <style>
   * {
@@ -94,5 +116,16 @@ import { ClientRouter } from 'astro:transitions';
   }
   .vt__nav a:hover {
     border-color: var(--color-ink);
+  }
+  .vt__modes {
+    margin-top: var(--space-l);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    color: var(--color-label);
+  }
+  .vt__modes a {
+    color: var(--color-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-hairline);
   }
 </style>

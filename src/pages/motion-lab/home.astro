@@ -24,9 +24,9 @@ const questions = [
     param: 'suite',
     label: 'suite héros',
     options: [
-      { v: 'a', label: 'A. Sous-titre et bouton en fondu net (actuel)' },
-      { v: 'b', label: 'B. Sous-titre en montée masquée, bouton en fondu' },
-      { v: 'c', label: 'C. Mini blocs encre sur le sous-titre et le bouton' },
+      { v: 'a', label: 'A. Sous-titre en fondu net; le bouton balaie sa couleur' },
+      { v: 'b', label: 'B. Sous-titre en montée masquée; le bouton balaie sa couleur' },
+      { v: 'c', label: 'C. Mini bloc encre sur le sous-titre; le bouton balaie sa couleur' },
     ],
   },
   {
@@ -43,6 +43,7 @@ const questions = [
     param: 'reveal',
     label: 'défilement',
     options: [
+      { v: 'c', label: 'C. Titres en bloc encre décalé, corps en fondu, boutons en balayage' },
       { v: 'a', label: 'A. Uniforme, 12px pour toutes les sections (actuel)' },
       { v: 'b', label: 'B. Pondéré par section : bandes légères en fondu seul' },
     ],
@@ -92,7 +93,7 @@ const questions = [
     hero: pick('hero', ['b', 'a', 'c'] as const),
     follow: pick('suite', ['a', 'b', 'c'] as const),
     steps: pick('steps', ['a', 'd', 'b', 'c'] as const),
-    reveal: pick('reveal', ['a', 'b'] as const),
+    reveal: pick('reveal', ['c', 'a', 'b'] as const),
     mark: pick('mark', ['a', 'b', 'c'] as const),
     footer: pick('footer', ['a', 'b'] as const),
   };
