@@ -15,9 +15,18 @@ const questions = [
     param: 'hero',
     label: 'héros',
     options: [
-      { v: 'a', label: 'A. Fondu montant au tempo souffle (traitement actuel)' },
-      { v: 'b', label: 'B. Bloc par ligne, façon landonorris.com : le clip ouvre sur le bloc, le bloc se retire' },
+      { v: 'b', label: 'B. Bloc par ligne, façon landonorris.com (VERROUILLÉ, Gael 2026-07-07)' },
+      { v: 'a', label: 'A. Fondu montant au tempo souffle (ancien traitement)' },
       { v: 'c', label: 'C. Lignes masquées qui montent (SplitText)' },
+    ],
+  },
+  {
+    param: 'suite',
+    label: 'suite héros',
+    options: [
+      { v: 'a', label: 'A. Sous-titre et bouton en fondu net (actuel)' },
+      { v: 'b', label: 'B. Sous-titre en montée masquée, bouton en fondu' },
+      { v: 'c', label: 'C. Mini blocs encre sur le sous-titre et le bouton' },
     ],
   },
   {
@@ -25,6 +34,7 @@ const questions = [
     label: 'étapes',
     options: [
       { v: 'a', label: 'A. Fondu montant au tempo souffle (traitement actuel)' },
+      { v: 'd', label: 'D. Montée masquée ligne par ligne (le geste du héros C)' },
       { v: 'b', label: 'B. Balayage masqué par étape' },
       { v: 'c', label: 'C. Étapes nettes, le souffle passe au titre de clôture' },
     ],
@@ -79,8 +89,9 @@ const questions = [
     return v && allowed.includes(v) ? v : allowed[0];
   };
   const picks: HomePicks = {
-    hero: pick('hero', ['a', 'b', 'c'] as const),
-    steps: pick('steps', ['a', 'b', 'c'] as const),
+    hero: pick('hero', ['b', 'a', 'c'] as const),
+    follow: pick('suite', ['a', 'b', 'c'] as const),
+    steps: pick('steps', ['a', 'd', 'b', 'c'] as const),
     reveal: pick('reveal', ['a', 'b'] as const),
     mark: pick('mark', ['a', 'b', 'c'] as const),
     footer: pick('footer', ['a', 'b'] as const),

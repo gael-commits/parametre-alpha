@@ -19,16 +19,16 @@ const questions = [
     param: 'hero',
     label: 'héros secteur',
     options: [
-      { v: 'same', label: 'Même entrée que le héros de la page d’accueil (actuel)' },
-      { v: 'quiet', label: 'Entrée discrète : tempo net, pas de souffle' },
+      { v: 'quiet', label: 'Entrée discrète, tempo net (VERROUILLÉ, Gael 2026-07-07)' },
+      { v: 'same', label: 'Même entrée que le héros de la page d’accueil (comparaison)' },
     ],
   },
   {
     param: 'home',
     label: 'motif accueil',
     options: [
+      { v: 'b', label: 'B. Bloc par ligne façon landonorris.com (verrouillé côté accueil)' },
       { v: 'a', label: 'A. Fondu montant au tempo souffle' },
-      { v: 'b', label: 'B. Révélation par bloc encre' },
       { v: 'c', label: 'C. Lignes masquées (SplitText)' },
     ],
   },
@@ -37,6 +37,7 @@ const questions = [
     label: 'approche',
     options: [
       { v: 'a', label: 'A. Fondu montant au tempo souffle (actuel)' },
+      { v: 'd', label: 'D. Montée masquée ligne par ligne' },
       { v: 'b', label: 'B. Balayage masqué par étape' },
       { v: 'c', label: 'C. Étapes nettes, le souffle passe au titre de clôture' },
     ],
@@ -66,9 +67,10 @@ const questions = [
     return v && allowed.includes(v) ? v : allowed[0];
   };
   const picks: SectorPicks = {
-    hero: pick('hero', ['same', 'quiet'] as const),
-    homeHero: pick('home', ['a', 'b', 'c'] as const),
-    steps: pick('steps', ['a', 'b', 'c'] as const),
+    hero: pick('hero', ['quiet', 'same'] as const),
+    homeHero: pick('home', ['b', 'a', 'c'] as const),
+    follow: pick('suite', ['a', 'b', 'c'] as const),
+    steps: pick('steps', ['a', 'd', 'b', 'c'] as const),
     reveal: pick('reveal', ['a', 'b'] as const),
     mark: pick('mark', ['a', 'b', 'c'] as const),
     footer: pick('footer', ['a', 'b'] as const),

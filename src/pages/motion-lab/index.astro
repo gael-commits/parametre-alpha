@@ -7,20 +7,21 @@ import HomeLayout from '../../layouts/HomeLayout.astro';
 const questions = [
   {
     n: '01',
-    title: 'Le héros de la page d’accueil',
-    note: 'Premier des deux moments de souffle. Le fondu actuel, un bloc encre, ou des lignes masquées.',
+    title: 'Le héros : la suite du bloc par ligne',
+    note: 'Le héros est verrouillé sur le bloc par ligne façon landonorris.com. Reste sa suite : comment « Sans vous en occuper. » et le bouton entrent-ils derrière lui.',
     links: [
-      { label: 'A. Fondu montant, tempo souffle (actuel)', href: '/motion-lab/home?hero=a' },
-      { label: 'B. Bloc par ligne, façon landonorris.com', href: '/motion-lab/home?hero=b' },
-      { label: 'C. Lignes masquées qui montent (SplitText)', href: '/motion-lab/home?hero=c' },
+      { label: 'A. Suite en fondu net (actuel)', href: '/motion-lab/home?suite=a' },
+      { label: 'B. Sous-titre en montée masquée', href: '/motion-lab/home?suite=b' },
+      { label: 'C. Mini blocs encre sur la suite', href: '/motion-lab/home?suite=c' },
     ],
   },
   {
     n: '02',
     title: 'Les étapes (second moment de souffle)',
-    note: 'Descendre jusqu’à la bande « comment on travaille ». Le candidat C rend les étapes nettes et déplace le souffle vers le titre de clôture.',
+    note: 'Descendre jusqu’à la bande « comment on travaille ». D reprend le geste des lignes masquées ; C rend les étapes nettes et déplace le souffle vers le titre de clôture.',
     links: [
       { label: 'A. Fondu montant, tempo souffle (actuel)', href: '/motion-lab/home?steps=a' },
+      { label: 'D. Montée masquée ligne par ligne', href: '/motion-lab/home?steps=d' },
       { label: 'B. Balayage masqué par étape', href: '/motion-lab/home?steps=b' },
       { label: 'C. Étapes nettes, souffle sur la clôture', href: '/motion-lab/home?steps=c' },
     ],
@@ -48,10 +49,10 @@ const questions = [
   {
     n: '05',
     title: 'Le héros des pages secteurs',
-    note: 'La même entrée que l’accueil, ou une entrée discrète au tempo net.',
+    note: 'Verrouillé : entrée discrète au tempo net. La comparaison reste disponible.',
     links: [
-      { label: 'Même entrée que l’accueil (actuel)', href: '/motion-lab/secteur?hero=same' },
-      { label: 'Entrée discrète, sans souffle', href: '/motion-lab/secteur?hero=quiet' },
+      { label: 'Entrée discrète (verrouillé)', href: '/motion-lab/secteur?hero=quiet' },
+      { label: 'Même entrée que l’accueil (comparaison)', href: '/motion-lab/secteur?hero=same' },
     ],
   },
   {

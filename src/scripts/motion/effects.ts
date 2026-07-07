@@ -65,7 +65,9 @@ export function registerEffects(): void {
         splits.push(split);
         split.lines.forEach((line, i) => {
           const el = line as HTMLElement;
-          el.style.position = 'relative';
+          // fit-content: the cover hugs the rendered text width (Lando behaviour),
+          // measured per line so it holds in FR and EN alike.
+          Object.assign(el.style, { position: 'relative', width: 'fit-content' });
           gsap.set(el, { clipPath: 'inset(0 100% 0 0)', autoAlpha: 1 });
           const cover = document.createElement('span');
           cover.setAttribute('aria-hidden', 'true');
@@ -119,8 +121,8 @@ export function registerEffects(): void {
 
   // linesUp - SplitText line stagger behind a per-line mask (the masked rise).
   // autoSplit re-splits on font load and on rewrap INSIDE a breakpoint; crossing a
-  // breakpoint is handled by matchMedia revert + revertSplits(). Breathing tempo only:
-  // this pattern is licensed exclusively as a breathing-slot candidate.
+  // breakpoint is handled by matchMedia revert + revertSplits(). breathe:true (default)
+  // = breathing-slot tempo; breathe:false = crisp tempo for follower lines.
   gsap.registerEffect({
     name: 'linesUp',
     effect: (targets: gsap.TweenTarget, c: Record<string, any>) => {
@@ -132,8 +134,8 @@ export function registerEffects(): void {
         onSplit(self: SplitText) {
           const tween = gsap.from(self.lines, {
             yPercent: 110,
-            duration: T.durBreathe,
-            ease: T.easeBreathe,
+            duration: c.breathe ? T.durBreathe : T.durBase,
+            ease: c.breathe ? T.easeBreathe : T.easeOut,
             stagger: c.stagger,
           });
           tl.add(tween, 0);
@@ -143,7 +145,7 @@ export function registerEffects(): void {
       splits.push(split);
       return tl;
     },
-    defaults: { stagger: 0.08, delay: 0 },
+    defaults: { stagger: 0.08, delay: 0, breathe: true },
   });
 
   // colonSettle - the mark's red colon resolves once (the binome made kinetic,

@@ -15,8 +15,9 @@ export interface ChoreoCtx {
   mobile: boolean; // max-width 639: per-item triggers, shorter distances, later starts
 }
 
-export type HeroPick = 'a' | 'b' | 'c'; // a fade-up breathe | b ink block reveal | c SplitText lines
-export type StepsPick = 'a' | 'b' | 'c'; // a fade-up breathe | b mask wipe | c crisp steps + closing heading breathes
+export type HeroPick = 'a' | 'b' | 'c'; // a fade-up breathe | b ink block reveal (LOCKED, Gael 2026-07-07) | c SplitText lines
+export type FollowPick = 'a' | 'b' | 'c'; // hero followers (sub + CTA): a crisp fade-up | b masked line rise | c mini block reveal
+export type StepsPick = 'a' | 'b' | 'c' | 'd'; // a fade-up breathe | b mask wipe | c crisp steps + closing heading breathes | d masked line rise
 export type RevealPick = 'a' | 'b'; // a uniform 12px | b differentiated by section weight
 export type MarkPick = 'a' | 'b' | 'c'; // a scale settle | b ink-dry fade | c static
 export type FooterPick = 'a' | 'b'; // a still | b one crisp reveal
@@ -26,7 +27,12 @@ export type FooterPick = 'a' | 'b'; // a still | b one crisp reveal
 // viewport does not burn every trigger in the first screen and a half.
 export const START = { base: 'top 85%', steps: 'top 75%', mobileItem: 'top 88%' } as const;
 
-export function heroMoment(pick: HeroPick, headlineSel: string, ctx: ChoreoCtx): void {
+export function heroMoment(
+  pick: HeroPick,
+  follow: FollowPick,
+  headlineSel: string,
+  ctx: ChoreoCtx,
+): void {
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   if (!hero) return;
   const items = gsap.utils.toArray<HTMLElement>('[data-hero-item]', hero);
@@ -35,18 +41,40 @@ export function heroMoment(pick: HeroPick, headlineSel: string, ctx: ChoreoCtx):
   const rest = items.filter((el) => el !== headline);
   const dist = ctx.mobile ? 12 : 16;
 
+  // The followers (sub + CTA) enter as part of the same hero gesture, offset past the
+  // headline's first phase. One hero moment in the breathing count, not three.
+  const followers = (delay: number) => {
+    if (!rest.length) return;
+    if (follow === 'b') {
+      // Masked line rise at crisp tempo on the text lines; the CTA button (a filled
+      // element, no line mask possible) closes with the crisp fade.
+      const cta = rest[rest.length - 1];
+      const texts = rest.slice(0, -1);
+      if (texts.length) {
+        gsap.set(texts, { autoAlpha: 1 });
+        gsap.effects.linesUp(texts, { breathe: false, delay, stagger: 0.07 });
+      }
+      gsap.effects.revealUp(cta, { delay: delay + 0.15 });
+    } else if (follow === 'c') {
+      // Mini block reveals echoing the headline (Lando uses tint blocks on body text).
+      gsap.set(rest, { autoAlpha: 1 });
+      gsap.effects.blockReveal(rest, { delay, stagger: 0.12 });
+    } else {
+      gsap.effects.revealUp(rest, { stagger: 0.09, delay });
+    }
+  };
+
   if (pick === 'b' && headline) {
-    // Breathing slot #1 spent on the ink wipe; the rest enters crisp after it.
+    // Breathing slot #1 spent on the ink wipe (LOCKED hero treatment).
     gsap.set(rest, { autoAlpha: 0 });
     gsap.effects.blockReveal(headline, { delay: 0.1 });
-    gsap.effects.revealUp(rest, { stagger: 0.09, delay: 0.5 });
+    followers(0.5);
   } else if (pick === 'c' && headline) {
-    // Breathing slot #1 spent on the masked line rise; the rest enters crisp after it.
     gsap.set(rest, { autoAlpha: 0 });
     gsap.effects.linesUp(headline, { delay: 0.1, stagger: 0.1 });
-    gsap.effects.revealUp(rest, { stagger: 0.09, delay: 0.55 });
+    followers(0.55);
   } else {
-    // Current live treatment: the whole hero rises at breathing tempo.
+    // Previous live treatment: the whole hero rises at breathing tempo.
     gsap.effects.revealUp(items, { breathe: true, distance: dist, stagger: 0.12, delay: 0.1 });
   }
 }
@@ -112,13 +140,21 @@ export function stepsMoment(pick: StepsPick, ctx: ChoreoCtx): void {
   const wrap = document.querySelector<HTMLElement>('[data-steps]');
   if (wrap) {
     const items = gsap.utils.toArray<HTMLElement>('[data-step]', wrap);
-    gsap.set(items, { autoAlpha: 0, y: pick === 'b' ? 0 : ctx.mobile ? 12 : 20 });
+    gsap.set(items, {
+      autoAlpha: 0,
+      y: pick === 'b' || pick === 'd' ? 0 : ctx.mobile ? 12 : 20,
+    });
 
     const play = (targets: HTMLElement | HTMLElement[], stagger: number) => {
       if (pick === 'b') gsap.effects.maskReveal(targets, { stagger });
       else if (pick === 'c')
         gsap.effects.revealUp(targets, { stagger, distance: ctx.mobile ? 8 : 12 });
-      else
+      else if (pick === 'd') {
+        // Masked line rise inside each step (the hero-C gesture at the second slot):
+        // every text line of the band rises behind its mask, breathing tempo.
+        gsap.set(targets, { autoAlpha: 1, y: 0 });
+        gsap.effects.linesUp(targets, { stagger: 0.07 });
+      } else
         gsap.effects.revealUp(targets, {
           breathe: true,
           distance: ctx.mobile ? 12 : 20,
