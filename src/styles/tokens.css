@@ -1,43 +1,146 @@
 /*
-  DESIGN TOKENS - the design lane's side of the contract.
-  Scaffolded 2026-07-02. Known values are locked (brand). Everything marked
-  TODO (Fable 5) is a taste call to make on the Day 1-2 homepage slice, then
-  the rest of the design lane consumes whatever lands here.
-  Inert until a layout imports it; the live splash is unaffected.
+  DESIGN TOKENS - parametre.art homepage slice v1 (brief 01).
+  Implements the binding design-language contract:
+  internal/parametre/projects_active/parametre-website/context/design-language.md
+
+  Structure: PRIMITIVE tier (raw values, section 1) then SEMANTIC tier (roles that
+  reference the primitives, section 2). Components consume the SEMANTIC tier only.
+
+  Typography: Starter B (Restraint / Swiss) body system + Starter D (Display) for the
+  hero band only. Ratio 1.333 (perfect fourth), base 16px.
+  Colour: three locked grounds/inks plus a metered red. Ground is a review-only toggle
+  (section 2.1): default warm-white (#f9f7f2), ?ground=white (#ffffff), ?ground=warm
+  (#fbfaf7, the even-lighter alt). Old bone (#f4f1ea) rejected-too-warm 2026-07-04.
+  Motion: entrance-crisp baseline plus two licensed breathing curves.
 */
 
+/* ============================================================
+   1. PRIMITIVE TIER - raw values, do not consume directly
+   ============================================================ */
 :root {
-  /* --- Brand (locked) --- */
-  --color-ink: #111111;
-  --color-paper: #ffffff;
-  --color-accent: #e63946; /* the red dot */
+  /* --- Palette primitives (locked, design-language section 2) --- */
+  --p-ink: #111111; /* display grotesque only */
+  --p-near-black: #1a1a1a; /* body + serif reading passages */
+  --p-white: #ffffff; /* ground - clinical / ?ground=white */
+  --p-warm-white: #f9f7f2; /* ground DEFAULT - warm white (Gael 2026-07-04, lighter than bone) */
+  --p-warm-white-2: #fbfaf7; /* ground alt - even lighter warm white / ?ground=warm */
+  --p-bone: #f4f1ea; /* rejected-too-warm 2026-07-04 (was the old default); kept for reference */
+  --p-red: #e63946; /* the metered red */
+  --p-label: #6b6b6b; /* mono metadata grey */
+  --p-hairline-warm: #e8e5de; /* hairline on warm-white ground */
+  --p-hairline-white: #eaeaea; /* hairline on white ground */
 
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  /* --- Face primitives --- */
+  --p-font-display: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif; /* loud / certain */
+  --p-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; /* working body / UI */
+  --p-font-story: 'Source Serif 4', Georgia, 'Times New Roman', serif; /* story voice only */
+  --p-font-mono: 'Space Mono', 'SFMono-Regular', Menlo, monospace; /* mark + indices + metadata */
 
-  /* --- Type scale (TODO Fable 5: set the ratio + steps from the homepage) --- */
-  /* Starter modular scale placeholders; replace once the hero is designed. */
-  --step--1: 0.833rem;
-  --step-0: 1rem;
-  --step-1: 1.2rem;
-  --step-2: 1.44rem;
-  --step-3: 1.728rem;
-  --step-4: 2.074rem;
-  --step-5: 2.488rem;
+  /* --- Type scale primitives: 1.333 perfect fourth, base 16px (design-language section 1.2) --- */
+  --p-step--1: 0.75rem; /* 12px mono / caption */
+  --p-step-0: 1rem; /* 16px body */
+  --p-step-1: 1.333rem; /* ~21px large body / H3 */
+  --p-step-2: 1.777rem; /* ~28px H2 */
+  --p-step-3: 2.369rem; /* ~38px H1 non-hero */
+  --p-hero-1: clamp(2.75rem, 7vw, 5rem); /* 80px hero pain line - Starter D */
+  --p-hero-display: clamp(3.5rem, 11vw, 7.5rem); /* 120px SEATED-scale bleed (reserved) */
 
-  /* --- Spacing scale (TODO Fable 5) --- */
-  --space-xs: 0.5rem;
-  --space-s: 1rem;
-  --space-m: 2rem;
-  --space-l: 4rem;
-  --space-xl: 8rem;
+  /* --- Spacing primitives: phi-derived vertical rhythm (design-language section 3) --- */
+  --p-space-3xs: 0.25rem;
+  --p-space-2xs: 0.5rem;
+  --p-space-xs: 0.75rem;
+  --p-space-s: 1rem;
+  --p-space-m: 1.5rem;
+  --p-space-l: 2.5rem;
+  --p-space-xl: 4rem;
+  --p-space-2xl: 6.5rem; /* section vertical padding, golden step */
+  --p-space-3xl: 10.5rem; /* generous breathing band */
 
-  /* --- Grid: golden cannon (WDEC-004) (TODO Fable 5: derive columns/margins) --- */
+  /* --- Motion primitives (design-language section 4) --- */
+  --p-ease-out: cubic-bezier(0.2, 0, 0, 1); /* crisp Swiss baseline entrances */
+  --p-ease-breathe: cubic-bezier(0.16, 1, 0.3, 1); /* the two licensed breathing moments ONLY */
+  --p-dur-fast: 200ms;
+  --p-dur-base: 350ms; /* reduced from the scaffold 500ms */
+  --p-dur-breathe: 600ms;
+}
+
+/* ============================================================
+   2. SEMANTIC TIER - roles components consume
+   ============================================================ */
+:root {
+  /* --- Ground toggle (review-only, design-language section 2.2) ---
+     Default = warm-white (#f9f7f2). The Layout sets data-ground="white" (#ffffff) or
+     data-ground="warm" (#fbfaf7, the even-lighter alt) from ?ground=, flipping
+     --color-paper + --color-hairline. Old bone (#f4f1ea) rejected-too-warm 2026-07-04.
+     REMOVE the toggle affordance (query param + the variant blocks) at promotion,
+     keeping only the winning ground. */
+  --color-paper: var(--p-warm-white);
+  --color-hairline: var(--p-hairline-warm);
+
+  /* --- Ink / text --- */
+  --color-ink: var(--p-ink); /* display type, full-mass grotesque */
+  --color-text: var(--p-near-black); /* body + serif */
+  --color-accent: var(--p-red); /* metered red - max 3 hits per viewport */
+  --color-label: var(--p-label); /* mono metadata / eyebrow grey */
+
+  /* --- Faces --- */
+  --font-display: var(--p-font-display);
+  --font-body: var(--p-font-body);
+  --font-story: var(--p-font-story);
+  --font-mono: var(--p-font-mono);
+
+  /* --- Type roles --- */
+  --text-body: var(--p-step-0); /* 16px */
+  --text-body-lg: var(--p-step-1); /* ~21px large body */
+  --text-h3: var(--p-step-1);
+  --text-h2: var(--p-step-2);
+  --text-h1: var(--p-step-3);
+  --text-hero: var(--p-hero-1);
+  --text-mono: var(--p-step--1);
+  --text-eyebrow: 0.875rem; /* 14px H4 / eyebrow */
+
+  /* --- Type metrics --- */
+  --leading-body: 1.55;
+  --leading-tight: 1.25;
+  --leading-hero: 1.05;
+  --leading-story: 1.65;
+  --tracking-eyebrow: 0.08em;
+  --tracking-hero: -0.03em;
+  --tracking-mono: 0;
+
+  /* --- Measure caps --- */
+  --measure-body: 68ch; /* 55-70ch Starter B */
+  --measure-prose: 40rem; /* narrow prose bands */
+  --measure-hero: 22ch; /* narrow hero for impact */
+  --measure-card: 34ch;
+
+  /* --- Spacing roles --- */
+  --space-xs: var(--p-space-xs);
+  --space-s: var(--p-space-s);
+  --space-m: var(--p-space-m);
+  --space-l: var(--p-space-l);
+  --space-xl: var(--p-space-xl);
+  --space-section: var(--p-space-2xl);
+  --space-breath: var(--p-space-3xl);
+
+  /* --- Grid: golden cannon (WDEC-004, design-language section 3) --- */
   --grid-max: 1200px;
-  --grid-gutter: var(--space-m);
+  --grid-inset: clamp(1.5rem, 5vw, 4rem);
 
-  /* --- Motion (GSAP-driven; TODO Fable 5: durations/eases as a system) --- */
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --dur-fast: 200ms;
-  --dur-base: 500ms;
+  /* --- Motion roles --- */
+  --ease-out: var(--p-ease-out);
+  --ease-breathe: var(--p-ease-breathe);
+  --dur-fast: var(--p-dur-fast);
+  --dur-base: var(--p-dur-base);
+  --dur-breathe: var(--p-dur-breathe);
+}
+
+/* Ground variants - flip ONLY the two ground tokens (review-only). */
+:root[data-ground='white'] {
+  --color-paper: var(--p-white);
+  --color-hairline: var(--p-hairline-white);
+}
+:root[data-ground='warm'] {
+  --color-paper: var(--p-warm-white-2);
+  --color-hairline: var(--p-hairline-warm);
 }

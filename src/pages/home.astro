@@ -1,0 +1,25 @@
+---
+// FR homepage slice v1 (brief 01). Review route: /home.
+// The live coming-soon splash keeps /  (src/pages/index.astro) until promotion.
+// At promotion this becomes the root; see progress.md deploy-boundary note.
+import { getEntry } from 'astro:content';
+import HomeLayout from '../layouts/HomeLayout.astro';
+import HomeSections from '../components/HomeSections.astro';
+
+const entry = await getEntry('homepage', 'fr');
+if (!entry) throw new Error('homepage/fr content entry not found');
+const data = entry.data;
+
+const title = 'parametre - Vos clients reviennent, votre maison grandit';
+const description = data.heroSub;
+---
+<HomeLayout
+  lang="fr"
+  title={title}
+  description={description}
+  selfPath="/home"
+  altPath="/en/home"
+  altLang="en"
+>
+  <HomeSections data={data} ctaHref="/#contact" />
+</HomeLayout>

@@ -1,0 +1,179 @@
+---
+interface Props {
+  lang: 'fr' | 'en';
+  form: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    projectType: string;
+    projectTypes: Record<string, string>;
+    message: string;
+    messagePlaceholder: string;
+    gdpr: string;
+    submit: string;
+    sending: string;
+    success: string;
+    error: string;
+  };
+  closeLabel: string;
+  linkedinUrl: string;
+  linkedinLabel: string;
+}
+
+const { lang, form: t, closeLabel, linkedinUrl, linkedinLabel } = Astro.props;
+---
+
+<div class="modal" id="contactModal" aria-hidden="true">
+  <div class="modal__panel">
+    <button class="modal__close" aria-label={closeLabel}>&times;</button>
+    <form class="contact__form" id="contactForm" novalidate>
+      <input type="text" name="_hp" tabindex="-1" autocomplete="off" class="contact__hp" aria-hidden="true" />
+      <input type="hidden" name="language" value={lang} />
+
+      <div class="contact__row">
+        <div class="contact__field">
+          <label for="firstName">{t.firstName}</label>
+          <input type="text" id="firstName" name="firstName" required autocomplete="given-name" />
+        </div>
+        <div class="contact__field">
+          <label for="lastName">{t.lastName}</label>
+          <input type="text" id="lastName" name="lastName" required autocomplete="family-name" />
+        </div>
+      </div>
+
+      <div class="contact__row">
+        <div class="contact__field">
+          <label for="email">{t.email}</label>
+          <input type="email" id="email" name="email" required autocomplete="email" />
+        </div>
+        <div class="contact__field">
+          <label for="projectType">{t.projectType}</label>
+          <select id="projectType" name="projectType" required>
+            <option value="" disabled selected>—</option>
+            {Object.entries(t.projectTypes).map(([value, label]) => (
+              <option value={value}>{label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div class="contact__field">
+        <label for="message">{t.message}</label>
+        <textarea id="message" name="message" rows="4" required placeholder={t.messagePlaceholder}></textarea>
+      </div>
+
+      <label class="contact__gdpr">
+        <input type="checkbox" name="gdpr" required />
+        <span>{t.gdpr}</span>
+      </label>
+
+      <div class="contact__actions">
+        <button type="submit" class="contact__submit" data-label={t.submit} data-sending={t.sending}>
+          {t.submit}
+        </button>
+        <a href={linkedinUrl} target="_blank" rel="noopener" class="contact__linkedin">{linkedinLabel}</a>
+      </div>
+
+      <p class="contact__feedback contact__feedback--success" aria-live="polite">{t.success}</p>
+      <p class="contact__feedback contact__feedback--error" aria-live="polite">{t.error}</p>
+    </form>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById('contactModal') as HTMLElement;
+  const form = document.getElementById('contactForm') as HTMLFormElement;
+  const btn = form.querySelector('.contact__submit') as HTMLButtonElement;
+  const successMsg = form.querySelector('.contact__feedback--success') as HTMLElement;
+  const errorMsg = form.querySelector('.contact__feedback--error') as HTMLElement;
+
+  // --- Modal open/close ---
+  function openModal() {
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    // Focus first input after animation
+    setTimeout(() => {
+      form.querySelector<HTMLInputElement>('#firstName')?.focus();
+    }, 150);
+  }
+
+  function closeModal() {
+    modal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }
+
+  // Open triggers (any element with data-modal-open)
+  document.querySelectorAll('[data-modal-open]').forEach((el) => {
+    el.addEventListener('click', openModal);
+  });
+
+  // Close button
+  modal.querySelector('.modal__close')!.addEventListener('click', closeModal);
+
+  // Click outside panel to close
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // Escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.getAttribute('aria-hidden') === 'false') {
+      closeModal();
+    }
+  });
+
+  // --- Form submit ---
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    successMsg.classList.remove('visible');
+    errorMsg.classList.remove('visible');
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    const gdpr = form.querySelector<HTMLInputElement>('input[name="gdpr"]');
+    if (!gdpr?.checked) {
+      gdpr?.focus();
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = btn.dataset.sending || '...';
+
+    const data = {
+      firstName: (form.querySelector<HTMLInputElement>('#firstName'))!.value,
+      lastName: (form.querySelector<HTMLInputElement>('#lastName'))!.value,
+      email: (form.querySelector<HTMLInputElement>('#email'))!.value,
+      projectType: (form.querySelector<HTMLSelectElement>('#projectType'))!.value,
+      message: (form.querySelector<HTMLTextAreaElement>('#message'))!.value,
+      language: (form.querySelector<HTMLInputElement>('input[name="language"]'))!.value,
+      _hp: (form.querySelector<HTMLInputElement>('input[name="_hp"]'))!.value,
+    };
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (res.ok && result.success) {
+        successMsg.classList.add('visible');
+        form.reset();
+        // Auto-close after 3s
+        setTimeout(closeModal, 3000);
+      } else {
+        errorMsg.classList.add('visible');
+      }
+    } catch {
+      errorMsg.classList.add('visible');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = btn.dataset.label || 'Send';
+    }
+  });
+</script>

@@ -1,0 +1,243 @@
+---
+import '../styles/tokens.css';
+import BinomeMark from '../components/BinomeMark.astro';
+
+/*
+  HomeLayout - the homepage slice (brief 01). Separate from SplashLayout so the live
+  coming-soon splash (src/pages/index.astro, src/pages/en/index.astro) is untouched.
+  Footer chrome + language toggle are hardcoded here per amendment A5 (single-instance
+  site chrome, not homepage content; a `site` collection stands up at brief 02/03).
+*/
+interface Props {
+  lang: 'fr' | 'en';
+  title: string;
+  description: string;
+  selfPath: string;
+  altPath: string;
+  altLang: 'fr' | 'en';
+}
+const { lang, title, description, selfPath, altPath, altLang } = Astro.props;
+const ogLocale = lang === 'fr' ? 'fr_FR' : 'en_US';
+
+const chrome = {
+  fr: {
+    toggleLabel: 'EN',
+    toggleTitle: 'Switch to English',
+    location: 'Entre Annecy et Genève',
+    legalLabel: 'Mentions légales',
+    email: 'gael@parametre.art',
+    rights: 'Tous droits réservés.',
+  },
+  en: {
+    toggleLabel: 'FR',
+    toggleTitle: 'Passer en français',
+    location: 'Between Annecy and Geneva',
+    legalLabel: 'Legal notice',
+    email: 'gael@parametre.art',
+    rights: 'All rights reserved.',
+  },
+}[lang];
+
+const year = new Date().getFullYear();
+const legalHref = lang === 'fr' ? '/mentions-legales' : '/en/legal';
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={ogLocale} />
+    <link rel="alternate" hreflang={lang} href={selfPath} />
+    <link rel="alternate" hreflang={altLang} href={altPath} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <!-- Ground toggle (review-only affordance, remove at promotion): default warm-white | ?ground=white | ?ground=warm -->
+    <script is:inline>
+      (function () {
+        try {
+          var g = new URLSearchParams(window.location.search).get('ground');
+          if (g === 'white' || g === 'warm') document.documentElement.setAttribute('data-ground', g);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="site-header">
+      <BinomeMark href={selfPath} size="md" />
+      <a class="lang-toggle" href={altPath} title={chrome.toggleTitle}>{chrome.toggleLabel}</a>
+    </header>
+
+    <main class="site-main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <BinomeMark href={selfPath} size="sm" />
+        <div class="site-footer__meta">
+          <a href={`mailto:${chrome.email}`} class="site-footer__link">{chrome.email}</a>
+          <span class="site-footer__sep">{chrome.location}</span>
+          <a href={legalHref} class="site-footer__link">{chrome.legalLabel}</a>
+        </div>
+        <p class="site-footer__legal">&copy; {year} parametre. {chrome.rights}</p>
+      </div>
+    </footer>
+
+    <script>
+      import { initMotion } from '../scripts/motion';
+      initMotion();
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-family: var(--font-body);
+    color: var(--color-text);
+    background: var(--color-paper);
+    line-height: var(--leading-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--color-paper);
+  }
+
+  a {
+    color: inherit;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-paper);
+  }
+
+  /* --- Shared grid: golden-cannon centered content track (wireframe section 1) --- */
+  .band {
+    display: grid;
+    grid-template-columns:
+      minmax(var(--grid-inset), 1fr)
+      minmax(0, var(--measure))
+      minmax(var(--grid-inset), 1fr);
+    --measure: var(--grid-max);
+  }
+  .band > * {
+    grid-column: 2;
+  }
+
+  /* --- Header --- */
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-m) var(--grid-inset);
+  }
+  .lang-toggle {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-label);
+    text-decoration: none;
+    padding-bottom: 2px;
+    border-bottom: 1px solid var(--color-hairline);
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out);
+  }
+  .lang-toggle:hover {
+    color: var(--color-ink);
+    border-color: var(--color-ink);
+  }
+
+  .site-main {
+    flex: 1;
+  }
+
+  /* --- Footer (minimal, hardcoded chrome) --- */
+  .site-footer {
+    padding: var(--space-xl) var(--grid-inset) var(--space-l);
+    border-top: 1px solid var(--color-hairline);
+    margin-top: var(--space-breath);
+  }
+  .site-footer__inner {
+    max-width: var(--grid-max);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-s);
+  }
+  .site-footer__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-m);
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    color: var(--color-label);
+  }
+  .site-footer__link {
+    color: var(--color-label);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition:
+      color var(--dur-fast) var(--ease-out),
+      border-color var(--dur-fast) var(--ease-out);
+  }
+  .site-footer__link:hover {
+    color: var(--color-ink);
+    border-color: var(--color-hairline);
+  }
+  .site-footer__sep {
+    color: var(--color-label);
+  }
+  .site-footer__legal {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    color: var(--color-label);
+  }
+
+  /* --- Entrance baseline: elements start hidden, motion.ts reveals them.
+         When JS is off or reduced-motion is set, everything is visible. --- */
+  @media (prefers-reduced-motion: no-preference) {
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .site-footer__meta {
+      flex-direction: column;
+      gap: var(--space-2xs);
+    }
+  }
+</style>

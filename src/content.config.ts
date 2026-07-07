@@ -43,9 +43,25 @@ const homepage = defineCollection({
     tension: z.object({ heading: z.string(), body: z.string() }),
     valueCards: z.array(z.object({ title: z.string(), body: z.string() })), // Tier 2, ~4 cards
     howItWorks: z.object({ heading: z.string(), points: z.array(z.string()) }),
-    verticalTeasers: z.array(
-      z.object({ label: z.string(), blurb: z.string(), href: z.string() }),
-    ),
+    // Amendment A4 (brief 01 stress-test): Robin Tier 3 proof points. Optional so it
+    // does not break the bare-bones ship. Each entry is a short label plus optional body.
+    proof: z
+      .array(z.object({ label: z.string(), body: z.string().optional() }))
+      .optional(),
+    // Amendment A2: for the v1 slice the verticals teaser is ONE generic editorial line,
+    // not a per-vertical /secteurs/* menu. Kept optional so the section can be omitted.
+    verticalTeasers: z
+      .array(z.object({ label: z.string(), blurb: z.string(), href: z.string() }))
+      .optional(),
+    verticalsTeaserLine: z.string().optional(),
+    // WDEC-012 (2026-07-04): the three locked sector umbrellas, presentation-only
+    // (no links yet, the sector pages do not exist). Rendered as a mono numbered-index strip.
+    sectors: z
+      .object({
+        intro: z.string(),
+        items: z.array(z.object({ name: z.string(), line: z.string() })),
+      })
+      .optional(),
     closingCta: z.object({ heading: z.string(), body: z.string(), cta: z.string() }),
   }),
 });

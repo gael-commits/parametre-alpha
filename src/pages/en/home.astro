@@ -1,0 +1,23 @@
+---
+// EN homepage slice v1 (brief 01). Review route: /en/home.
+import { getEntry } from 'astro:content';
+import HomeLayout from '../../layouts/HomeLayout.astro';
+import HomeSections from '../../components/HomeSections.astro';
+
+const entry = await getEntry('homepage', 'en');
+if (!entry) throw new Error('homepage/en content entry not found');
+const data = entry.data;
+
+const title = 'parametre - Your guests return, and your house grows with them';
+const description = data.heroSub;
+---
+<HomeLayout
+  lang="en"
+  title={title}
+  description={description}
+  selfPath="/en/home"
+  altPath="/home"
+  altLang="fr"
+>
+  <HomeSections data={data} ctaHref="/en/#contact" />
+</HomeLayout>

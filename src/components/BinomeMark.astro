@@ -1,0 +1,37 @@
+---
+/*
+  The binome mark: parametre:art set in mono, lowercase, one weight.
+  The COLON is the binome and the one permanent structural red hit
+  (design-language section 5). parametre + art are ink, the colon alone is red.
+  data-breathe-mark flags the colon for breathing moment #1 (the reveal).
+*/
+interface Props {
+  href?: string;
+  size?: 'sm' | 'md';
+}
+const { href = '/', size = 'md' } = Astro.props;
+const Tag = href ? 'a' : 'span';
+---
+<Tag class={`binome binome--${size}`} {...href ? { href } : {}} aria-label="parametre:art">
+  <span class="binome__name">parametre</span><span class="binome__colon" data-breathe-mark>:</span><span class="binome__name">art</span>
+</Tag>
+
+<style>
+  .binome {
+    font-family: var(--font-mono);
+    font-weight: 500;
+    letter-spacing: var(--tracking-mono);
+    color: var(--color-ink);
+    text-decoration: none;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  .binome--sm { font-size: var(--text-mono); }
+  .binome--md { font-size: var(--text-body); }
+  .binome__colon {
+    color: var(--color-accent);
+    display: inline-block;
+  }
+  a.binome { transition: opacity var(--dur-fast) var(--ease-out); }
+  a.binome:hover { opacity: 0.7; }
+</style>

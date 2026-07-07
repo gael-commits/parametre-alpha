@@ -1,0 +1,466 @@
+---
+/*
+  The 8 homepage sections (wireframe v1 section 2), rendered from the homepage
+  collection entry. Order: hero, tension bridge, what-you-get, how-it-works, proof,
+  soft verticals line, closing CTA. (Minimal footer lives in HomeLayout.)
+  Golden-cannon single centered content track. Typography-first, no photos.
+*/
+interface HomeData {
+  heroHeadline: string;
+  heroSub: string;
+  heroCta: string;
+  tension: { heading: string; body: string };
+  valueCards: { title: string; body: string }[];
+  howItWorks: { heading: string; points: string[] };
+  proof?: { label: string; body?: string }[];
+  verticalsTeaserLine?: string;
+  sectors?: { intro: string; items: { name: string; line: string }[] };
+  closingCta: { heading: string; body: string; cta: string };
+}
+interface Props {
+  data: HomeData;
+  ctaHref: string;
+}
+const { data, ctaHref } = Astro.props;
+
+// Split a "Label. Sentence." step string into label + body (wireframe H1 note).
+function splitStep(s: string): { label: string; body: string } {
+  const i = s.indexOf('. ');
+  if (i === -1) return { label: s, body: '' };
+  return { label: s.slice(0, i + 1).trim(), body: s.slice(i + 2).trim() };
+}
+const steps = data.howItWorks.points.map(splitStep);
+const idx = (n: number) => String(n).padStart(2, '0');
+
+// Hero red metering: exactly ONE red word, the last word of the headline (the pivot:
+// "marketeur" / "marketer"). Split it off deterministically so the accent is data-driven,
+// not a brittle language-specific regex. design-language section 2.3.
+const heroTrim = data.heroHeadline.trimEnd();
+const lastSpace = heroTrim.lastIndexOf(' ');
+const heroLead = lastSpace === -1 ? '' : heroTrim.slice(0, lastSpace + 1);
+const heroAccentWord = lastSpace === -1 ? heroTrim : heroTrim.slice(lastSpace + 1);
+---
+
+<!-- 1. HERO (breathing moment #1) -->
+<section class="hero band" data-hero>
+  <div class="hero__inner">
+    <p class="hero__watermark" aria-hidden="true">parametre.art</p>
+    <h1 class="hero__headline" data-hero-item>{heroLead}<span class="hero__accent">{heroAccentWord}</span></h1>
+    <p class="hero__sub" data-hero-item>{data.heroSub}</p>
+    <a class="hero__cta" href={ctaHref} data-hero-item>{data.heroCta}</a>
+  </div>
+</section>
+
+<!-- 2. TENSION (compressed bridge) -->
+<section class="tension band" data-reveal>
+  <div class="tension__inner">
+    <h2 class="tension__heading">{data.tension.heading}</h2>
+    <p class="tension__body">{data.tension.body}</p>
+  </div>
+</section>
+
+<!-- 3. WHAT YOU GET (value cards, staggered) -->
+<section class="value band">
+  <div class="value__inner" data-reveal data-reveal-stagger="true">
+    {
+      data.valueCards.map((card, i) => (
+        <article class="value__card">
+          <span class="value__index">{idx(i + 1)}</span>
+          <h3 class="value__title">{card.title}</h3>
+          <p class="value__body">{card.body}</p>
+        </article>
+      ))
+    }
+  </div>
+</section>
+
+<!-- 4. HOW IT WORKS (breathing moment #2) -->
+<section class="how band">
+  <div class="how__inner">
+    <h2 class="how__heading" data-reveal>{data.howItWorks.heading}</h2>
+    <ol class="how__steps" data-steps>
+      {
+        steps.map((step, i) => (
+          <li class="how__step" data-step>
+            <span class="how__num">{idx(i + 1)}</span>
+            <div class="how__stepbody">
+              <span class="how__label">{step.label}</span>
+              {step.body && <span class="how__text">{step.body}</span>}
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<!-- 5. PROOF (Robin Tier 3) -->
+{
+  data.proof && data.proof.length > 0 && (
+    <section class="proof band">
+      <ul class="proof__row" data-reveal data-reveal-stagger="true">
+        {data.proof.map((p) => (
+          <li class="proof__item">
+            <span class="proof__label">{p.label}</span>
+            {p.body && <span class="proof__body">{p.body}</span>}
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<!-- 6. SECTOR STRIP (three locked umbrellas, presentation-only, no links yet) -->
+{
+  data.sectors && data.sectors.items.length > 0 && (
+    <section class="sectors band" data-reveal>
+      <p class="sectors__intro">{data.sectors.intro}</p>
+      <ul class="sectors__grid" data-reveal-stagger="true">
+        {data.sectors.items.map((s, i) => (
+          <li class="sectors__item">
+            <span class="sectors__index">{idx(i + 1)}</span>
+            <h3 class="sectors__name">{s.name}</h3>
+            <p class="sectors__line">{s.line}</p>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+{
+  !data.sectors && data.verticalsTeaserLine && (
+    <section class="verticals band" data-reveal>
+      <p class="verticals__line">{data.verticalsTeaserLine}</p>
+    </section>
+  )
+}
+
+<!-- 7. CLOSING CTA -->
+<section class="closing band" data-reveal>
+  <div class="closing__inner">
+    <h2 class="closing__heading">{data.closingCta.heading}</h2>
+    <p class="closing__body">{data.closingCta.body}</p>
+    <a class="closing__cta" href={ctaHref}>{data.closingCta.cta}</a>
+  </div>
+</section>
+
+<style>
+  section {
+    padding-block: var(--space-section);
+  }
+
+  /* --- 1. HERO --- */
+  .hero {
+    padding-block: var(--space-breath) var(--space-section);
+    position: relative;
+  }
+  .hero__inner {
+    position: relative;
+    /* Fills the content track (symmetric right edge). Measure caps live on the
+       text elements below, not this frame. */
+  }
+  .hero__watermark {
+    position: absolute;
+    top: -2.5rem;
+    left: -0.05em;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(3rem, 12vw, 9rem);
+    letter-spacing: -0.03em;
+    color: var(--color-ink);
+    opacity: 0.035;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 0;
+  }
+  .hero__headline {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-display);
+    font-size: var(--text-hero);
+    font-weight: 500;
+    line-height: var(--leading-hero);
+    letter-spacing: var(--tracking-hero);
+    color: var(--color-ink);
+    max-width: var(--measure-hero);
+    text-wrap: balance;
+  }
+  .hero__accent {
+    color: var(--color-accent);
+  }
+  .hero__sub {
+    position: relative;
+    z-index: 1;
+    margin-top: var(--space-m);
+    font-size: var(--text-body-lg);
+    line-height: 1.5;
+    color: var(--color-text);
+    max-width: 34rem;
+  }
+  .hero__cta {
+    position: relative;
+    z-index: 1;
+    display: inline-block;
+    margin-top: var(--space-l);
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--color-paper);
+    background: var(--color-accent);
+    padding: 0.85rem 1.6rem;
+    border-radius: 2px;
+    transition:
+      background-color var(--dur-fast) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out);
+  }
+  .hero__cta:hover {
+    background: var(--color-ink);
+  }
+
+  /* --- 2. TENSION (frame fills the content track; measure cap on prose only) --- */
+  .tension__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 500;
+    line-height: var(--leading-tight);
+    color: var(--color-ink);
+  }
+  .tension__body {
+    margin-top: var(--space-m);
+    font-size: var(--text-body-lg);
+    line-height: 1.5;
+    color: var(--color-text);
+    max-width: var(--measure-body); /* readability cap on prose only */
+  }
+
+  /* --- 3. WHAT YOU GET --- */
+  .value__inner {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* desktop >=1024: 4 across */
+    gap: var(--space-xl) var(--space-l);
+  }
+  .value__card {
+    border-top: 1px solid var(--color-hairline);
+    padding-top: var(--space-s);
+  }
+  .value__index {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    font-weight: 500;
+    color: var(--color-accent);
+  }
+  .value__title {
+    margin-top: var(--space-2xs);
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--color-ink);
+  }
+  .value__body {
+    margin-top: var(--space-xs);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    color: var(--color-text);
+  }
+
+  /* --- 4. HOW IT WORKS (frame fills the content track for a symmetric right edge) --- */
+  .how__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 500;
+    line-height: var(--leading-tight);
+    color: var(--color-ink);
+    max-width: 26ch;
+  }
+  .how__steps {
+    list-style: none;
+    margin-top: var(--space-xl);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* desktop >=1024: 4 across */
+    gap: var(--space-l);
+  }
+  .how__step {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+  .how__num {
+    font-family: var(--font-mono);
+    font-size: var(--text-body-lg);
+    font-weight: 500;
+    color: var(--color-accent);
+  }
+  .how__label {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    color: var(--color-ink);
+  }
+  .how__text {
+    display: block;
+    margin-top: var(--space-2xs);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    color: var(--color-text);
+  }
+
+  /* --- 5. PROOF --- */
+  .proof__row {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-l);
+    border-top: 1px solid var(--color-hairline);
+    padding-top: var(--space-m);
+  }
+  .proof__item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2xs);
+  }
+  .proof__label {
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-eyebrow);
+    color: var(--color-ink);
+  }
+  .proof__body {
+    font-size: var(--text-body);
+    line-height: 1.5;
+    color: var(--color-text);
+  }
+
+  /* --- 6. VERTICALS --- */
+  .verticals {
+    padding-block: var(--space-l);
+  }
+  .verticals__line {
+    max-width: var(--measure-prose);
+    font-family: var(--font-story);
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-story);
+    color: var(--color-text);
+  }
+
+  /* --- 6b. SECTOR STRIP (mono numbered index, hairline-topped columns) --- */
+  .sectors__intro {
+    max-width: var(--measure-body);
+    font-family: var(--font-story);
+    font-size: var(--text-body-lg);
+    line-height: var(--leading-story);
+    color: var(--color-text);
+  }
+  .sectors__grid {
+    list-style: none;
+    margin-top: var(--space-xl);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* desktop: 3 across, one per umbrella */
+    gap: var(--space-l);
+  }
+  .sectors__item {
+    border-top: 1px solid var(--color-hairline);
+    padding-top: var(--space-s);
+  }
+  .sectors__index {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    font-weight: 500;
+    color: var(--color-accent);
+  }
+  .sectors__name {
+    margin-top: var(--space-2xs);
+    font-family: var(--font-display);
+    font-size: var(--text-h3);
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--color-ink);
+  }
+  .sectors__line {
+    margin-top: var(--space-xs);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    color: var(--color-text);
+  }
+
+  /* --- 7. CLOSING CTA --- */
+  .closing {
+    padding-block: var(--space-breath) var(--space-section);
+  }
+  .closing__inner {
+    /* frame fills the content track; measure caps live on the prose below */
+  }
+  .closing__heading {
+    font-family: var(--font-display);
+    font-size: var(--text-h2);
+    font-weight: 500;
+    line-height: var(--leading-tight);
+    color: var(--color-ink);
+  }
+  .closing__body {
+    margin-top: var(--space-m);
+    font-size: var(--text-body-lg);
+    line-height: 1.5;
+    color: var(--color-text);
+    max-width: 34rem;
+  }
+  .closing__cta {
+    display: inline-block;
+    margin-top: var(--space-l);
+    font-family: var(--font-body);
+    font-size: var(--text-eyebrow);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    color: var(--color-paper);
+    background: var(--color-accent);
+    padding: 0.85rem 1.6rem;
+    border-radius: 2px;
+    transition: background-color var(--dur-fast) var(--ease-out);
+  }
+  .closing__cta:hover {
+    background: var(--color-ink);
+  }
+
+  /* --- Responsive ---
+     Steps + value cards: desktop >=1024 = 4 across (default above),
+     tablet portrait 640-1023 = 2x2, mobile <640 = 1 column. */
+  @media (max-width: 1023px) {
+    .value__inner {
+      grid-template-columns: repeat(2, 1fr); /* tablet portrait: 2 x 2 */
+    }
+    .how__steps {
+      grid-template-columns: repeat(2, 1fr); /* tablet portrait: 2 x 2 */
+    }
+    .proof__row {
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-m);
+    }
+    .sectors__grid {
+      grid-template-columns: 1fr; /* tablet portrait: stack the three umbrellas */
+      gap: var(--space-m);
+    }
+  }
+  @media (max-width: 639px) {
+    .value__inner {
+      grid-template-columns: 1fr; /* mobile: single column */
+      gap: var(--space-l);
+    }
+    .how__steps {
+      grid-template-columns: 1fr; /* mobile: single column */
+    }
+    .proof__row {
+      grid-template-columns: 1fr;
+    }
+    .sectors__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
