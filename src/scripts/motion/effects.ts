@@ -44,57 +44,53 @@ export function registerEffects(): void {
     defaults: { distance: 12, stagger: 0, delay: 0, breathe: false },
   });
 
-  // blockReveal - the per-line two-phase block wipe (knowledge capture: Codegrid block
-  // reveal, 2026-07-07). Each SplitText line gets its own cover: the block expands
-  // left-to-right over the empty line (--ease-wipe, in-out: a cover crossing the frame
-  // accelerates in and decelerates out), the text appears at full cover, the origin
-  // flips and the block collapses off to the right. Both phases together = one breathing
-  // duration. The cover is ALWAYS ink here: a red cover counts as a red hit
-  // (design-language 2.3) and the hero viewport is already at its 3-hit budget
-  // (colon + hero word + CTA).
+  // blockReveal - the highlight-line reveal, reverse-engineered from landonorris.com
+  // (Off Brand, data-anim-high; the Codegrid capture recreates the same site). Per
+  // SplitText line: the line starts clip-hidden with a full-width cover INSIDE it (the
+  // clip hides cover and text together, so nested colored spans cannot leak). The clip
+  // opens left-to-right revealing the solid block first (crisp out-curve), and OVERLAPPED
+  // at its midpoint the cover peels toward the right on the in-out wipe curve, uncovering
+  // the text left-to-right. Lando: 0.6s + 0.6s overlapped at 0.3, line stagger 0.15.
+  // Ours maps both phases to --dur-breathe. The cover is ALWAYS ink by default: a red
+  // cover counts as a red hit (design-language 2.3) and the hero viewport is already at
+  // its 3-hit budget (colon + hero word + CTA).
   gsap.registerEffect({
     name: 'blockReveal',
     effect: (targets: gsap.TweenTarget, c: Record<string, any>) => {
       const tl = gsap.timeline({ delay: c.delay });
-      const phase = T.durBreathe / 2;
       gsap.utils.toArray<HTMLElement>(targets).forEach((host) => {
-        // split.revert() restores the host's ORIGINAL markup, so the wrappers and
-        // covers added below disappear with it (matchMedia cleanup / lab replay).
+        // split.revert() restores the host's ORIGINAL markup, so the covers added
+        // below disappear with it (matchMedia cleanup / lab replay).
         const split = SplitText.create(host, { type: 'lines' });
         splits.push(split);
         split.lines.forEach((line, i) => {
           const el = line as HTMLElement;
-          // Wrapper hugging the line's text width; line and cover are SIBLINGS so the
-          // hidden line cannot hide its own cover (and nested colored spans stay covered).
-          const wrapper = document.createElement('div');
-          Object.assign(wrapper.style, { position: 'relative', width: 'fit-content' });
-          el.parentNode!.insertBefore(wrapper, el);
-          wrapper.appendChild(el);
+          el.style.position = 'relative';
+          gsap.set(el, { clipPath: 'inset(0 100% 0 0)', autoAlpha: 1 });
           const cover = document.createElement('span');
           cover.setAttribute('aria-hidden', 'true');
           Object.assign(cover.style, {
             position: 'absolute',
             inset: '0',
             background: c.color,
-            transformOrigin: 'left center',
-            transform: 'scaleX(0)',
+            transformOrigin: 'right center',
             pointerEvents: 'none',
             zIndex: '2',
           });
-          wrapper.appendChild(cover);
-          gsap.set(el, { autoAlpha: 0 });
-          const lineTl = gsap.timeline();
-          lineTl
-            .to(cover, { scaleX: 1, duration: phase, ease: T.easeWipe })
-            .set(el, { autoAlpha: 1 })
-            .set(cover, { transformOrigin: 'right center' })
-            .to(cover, {
+          el.appendChild(cover);
+          gsap.set(cover, { scaleX: 1 });
+          const at = i * c.stagger;
+          tl.to(el, { clipPath: 'inset(0 0% 0 0)', duration: T.durBreathe, ease: T.easeOut }, at);
+          tl.to(
+            cover,
+            {
               scaleX: 0,
-              duration: phase,
+              duration: T.durBreathe,
               ease: T.easeWipe,
               onComplete: () => cover.remove(),
-            });
-          tl.add(lineTl, i * c.stagger);
+            },
+            at + T.durBreathe / 2,
+          );
         });
       });
       return tl;
