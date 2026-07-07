@@ -27,6 +27,25 @@ export type FooterPick = 'a' | 'b'; // a still | b one crisp reveal
 // viewport does not burn every trigger in the first screen and a half.
 export const START = { base: 'top 85%', steps: 'top 75%', mobileItem: 'top 88%' } as const;
 
+// Load chain (Gael 2026-07-07): a section already inside the first viewport at init must
+// NOT fire parallel to the hero; it continues the hero's line cadence, in document order.
+// Below-fold sections keep their scroll triggers. The chain delay = the hero's own delay
+// plus its line slots, then one step per queued section.
+// Chain base = when the hero headline's peel is landing (delay 0.1 + line-2 start 0.15
+// + clip 0.6 + half-overlap 0.3 at breathing tempo, rounded). Starting the next block
+// here reads as "after the hero, in sequence"; earlier reads as parallel (Gael's note).
+const CHAIN_BASE = 1.0;
+const CHAIN_STEP = 0.15;
+let chainIndex = 0;
+export function resetLoadChain(): void {
+  chainIndex = 0;
+}
+function loadChainDelay(el: HTMLElement, ctx: ChoreoCtx): number | null {
+  const pct = ctx.mobile ? 0.88 : 0.85; // mirrors the trigger starts above
+  if (el.getBoundingClientRect().top >= window.innerHeight * pct) return null;
+  return CHAIN_BASE + chainIndex++ * CHAIN_STEP;
+}
+
 export function heroMoment(
   pick: HeroPick,
   follow: FollowPick,
@@ -129,18 +148,23 @@ export function baselineReveals(pick: RevealPick, ctx: ChoreoCtx, skipClosing = 
         gsap.set(el, { autoAlpha: 1, y: 0 });
         gsap.set(heading, { autoAlpha: 0 });
         if (prose.length) gsap.set(prose, { autoAlpha: 0, y: ctx.mobile ? 8 : 12 });
-        ScrollTrigger.create({
-          trigger: el,
-          start: ctx.mobile ? START.mobileItem : START.base,
-          once: true,
-          onEnter: () => {
-            gsap.set(heading, { autoAlpha: 1 });
-            gsap.effects.blockReveal(heading, { breathe: false, stagger: 0.1 });
-            if (prose.length)
-              gsap.effects.revealUp(prose, { delay: 0.2, stagger: 0.08 });
-            if (ctas.length) gsap.effects.maskReveal(ctas, { breathe: false, delay: 0.35 });
-          },
-        });
+        const fire = (at: number) => {
+          gsap.set(heading, { autoAlpha: 1 }); // blockReveal's clip re-hides it instantly
+          gsap.effects.blockReveal(heading, { breathe: false, stagger: 0.1, delay: at });
+          if (prose.length)
+            gsap.effects.revealUp(prose, { delay: at + 0.2, stagger: 0.08 });
+          if (ctas.length)
+            gsap.effects.maskReveal(ctas, { breathe: false, delay: at + 0.35 });
+        };
+        const chained = loadChainDelay(el, ctx);
+        if (chained !== null) fire(chained);
+        else
+          ScrollTrigger.create({
+            trigger: el,
+            start: ctx.mobile ? START.mobileItem : START.base,
+            once: true,
+            onEnter: () => fire(0),
+          });
         return;
       }
     }
@@ -160,6 +184,11 @@ export function baselineReveals(pick: RevealPick, ctx: ChoreoCtx, skipClosing = 
       if (ctx.mobile) {
         // Single-column lists: one trigger per item, or off-screen items animate unseen.
         children.forEach((child) => {
+          const chained = loadChainDelay(child, ctx);
+          if (chained !== null) {
+            gsap.effects.revealUp(child, { distance, delay: chained });
+            return;
+          }
           ScrollTrigger.create({
             trigger: child,
             start: START.mobileItem,
@@ -169,6 +198,11 @@ export function baselineReveals(pick: RevealPick, ctx: ChoreoCtx, skipClosing = 
         });
         return;
       }
+    }
+    const chained = loadChainDelay(el, ctx);
+    if (chained !== null) {
+      gsap.effects.revealUp(children, { distance, stagger: stagger ? 0.09 : 0, delay: chained });
+      return;
     }
     ScrollTrigger.create({
       trigger: el,
@@ -190,25 +224,31 @@ export function stepsMoment(pick: StepsPick, ctx: ChoreoCtx): void {
       y: pick === 'b' || pick === 'd' ? 0 : ctx.mobile ? 12 : 20,
     });
 
-    const play = (targets: HTMLElement | HTMLElement[], stagger: number) => {
-      if (pick === 'b') gsap.effects.maskReveal(targets, { stagger });
+    const play = (targets: HTMLElement | HTMLElement[], stagger: number, at = 0) => {
+      if (pick === 'b') gsap.effects.maskReveal(targets, { stagger, delay: at });
       else if (pick === 'c')
-        gsap.effects.revealUp(targets, { stagger, distance: ctx.mobile ? 8 : 12 });
+        gsap.effects.revealUp(targets, { stagger, distance: ctx.mobile ? 8 : 12, delay: at });
       else if (pick === 'd') {
         // Masked line rise inside each step (the hero-C gesture at the second slot):
         // every text line of the band rises behind its mask, breathing tempo.
         gsap.set(targets, { autoAlpha: 1, y: 0 });
-        gsap.effects.linesUp(targets, { stagger: 0.07 });
+        gsap.effects.linesUp(targets, { stagger: 0.07, delay: at });
       } else
         gsap.effects.revealUp(targets, {
           breathe: true,
           distance: ctx.mobile ? 12 : 20,
           stagger,
+          delay: at,
         });
     };
 
     if (ctx.mobile) {
       items.forEach((item) => {
+        const chained = loadChainDelay(item, ctx);
+        if (chained !== null) {
+          play(item, 0, chained);
+          return;
+        }
         ScrollTrigger.create({
           trigger: item,
           start: START.mobileItem,
@@ -217,12 +257,15 @@ export function stepsMoment(pick: StepsPick, ctx: ChoreoCtx): void {
         });
       });
     } else {
-      ScrollTrigger.create({
-        trigger: wrap,
-        start: START.steps,
-        once: true,
-        onEnter: () => play(items, pick === 'c' ? 0.09 : 0.22),
-      });
+      const chained = loadChainDelay(wrap, ctx);
+      if (chained !== null) play(items, pick === 'c' ? 0.09 : 0.22, chained);
+      else
+        ScrollTrigger.create({
+          trigger: wrap,
+          start: START.steps,
+          once: true,
+          onEnter: () => play(items, pick === 'c' ? 0.09 : 0.22),
+        });
     }
   }
 

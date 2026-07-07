@@ -16,7 +16,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { loadTokens, BP } from './tokens';
 import { registerEffects, revertSplits } from './effects';
-import { initButtonRoll } from './shared';
+import { initButtonRoll, resetLoadChain } from './shared';
 import { homeChoreography, HOME_DEFAULTS, type HomePicks } from './home';
 import { sectorChoreography, SECTOR_DEFAULTS, type SectorPicks } from './sector';
 
@@ -72,6 +72,7 @@ function buildMatchMedia(args: InitArgs): gsap.MatchMedia {
       // (the [data-reveal] pre-hide only applies under no-preference).
       if (c.reduce) return;
 
+      resetLoadChain();
       const ctx = { mobile: c.mobile };
       if (args.page === 'sector') {
         sectorChoreography({ ...SECTOR_DEFAULTS, ...args.picks }, ctx);

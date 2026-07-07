@@ -242,8 +242,10 @@ const legalHref = lang === 'fr' ? '/mentions-legales' : '/en/legal';
          The label rolls up, its duplicate rolls in from below, per-letter delay.
          Reduced motion: letters hold still (transform never applies). --- */
   [data-roll] .roll {
+    /* block, not inline-block: an inline-block with overflow hidden re-baselines to its
+       bottom edge and the label loses its vertical centering inside the button padding */
     position: relative;
-    display: inline-block;
+    display: block;
     overflow: hidden;
   }
   [data-roll] .roll__layer {
