@@ -31,10 +31,11 @@ export const START = { base: 'top 85%', steps: 'top 75%', mobileItem: 'top 88%' 
 // NOT fire parallel to the hero; it continues the hero's line cadence, in document order.
 // Below-fold sections keep their scroll triggers. The chain delay = the hero's own delay
 // plus its line slots, then one step per queued section.
-// Chain base = when the hero headline's peel is landing (delay 0.1 + line-2 start 0.15
-// + clip 0.6 + half-overlap 0.3 at breathing tempo, rounded). Starting the next block
-// here reads as "after the hero, in sequence"; earlier reads as parallel (Gael's note).
-const CHAIN_BASE = 1.0;
+// Chain base = after the FULL hero beat: headline peel lands ~1.15, then the followers
+// run as their own perceptible beat (start 1.1, CTA wipe done ~1.65). Starting the next
+// section here keeps the one-sequence feel; earlier reads as parallel (Gael's notes,
+// 2026-07-07, twice: the tension heading, then the followers).
+const CHAIN_BASE = 1.6;
 const CHAIN_STEP = 0.15;
 let chainIndex = 0;
 export function resetLoadChain(): void {
@@ -88,13 +89,16 @@ export function heroMoment(
 
   if (pick === 'b' && headline) {
     // Breathing slot #1 spent on the ink wipe (LOCKED hero treatment).
+    // Followers start AFTER the headline's peel has landed (delay 0.1 + line-2 start
+    // 0.15 + clip 0.6 + half-overlap 0.3 ≈ 1.15): a second perceptible beat, not a
+    // parallel animation the eye misses while reading the blocks (Gael, 2026-07-07).
     gsap.set(rest, { autoAlpha: 0 });
     gsap.effects.blockReveal(headline, { delay: 0.1 });
-    followers(0.5);
+    followers(1.1);
   } else if (pick === 'c' && headline) {
     gsap.set(rest, { autoAlpha: 0 });
     gsap.effects.linesUp(headline, { delay: 0.1, stagger: 0.1 });
-    followers(0.55);
+    followers(1.1);
   } else {
     // Previous live treatment: the whole hero rises at breathing tempo.
     gsap.effects.revealUp(items, { breathe: true, distance: dist, stagger: 0.12, delay: 0.1 });
