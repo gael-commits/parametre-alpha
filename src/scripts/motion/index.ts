@@ -37,6 +37,25 @@ export function initMotion(args: InitArgs): MotionHandle {
   loadTokens();
   registerEffects();
 
+  // Wait for fonts before choreographing: SplitText line measurements (blockReveal,
+  // linesUp) are only correct against the final faces. Resolves in ms on a warm cache.
+  let mm: gsap.MatchMedia | null = null;
+  let cancelled = false;
+  const ready: Promise<unknown> = document.fonts?.ready ?? Promise.resolve();
+  ready.then(() => {
+    if (cancelled) return;
+    mm = buildMatchMedia(args);
+  });
+
+  return {
+    revert: () => {
+      cancelled = true;
+      mm?.revert();
+    },
+  };
+}
+
+function buildMatchMedia(args: InitArgs): gsap.MatchMedia {
   const mm = gsap.matchMedia();
   mm.add(
     {
@@ -62,6 +81,5 @@ export function initMotion(args: InitArgs): MotionHandle {
       return () => revertSplits();
     },
   );
-
-  return { revert: () => mm.revert() };
+  return mm;
 }

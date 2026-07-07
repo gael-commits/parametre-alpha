@@ -59,6 +59,9 @@
   /* --- Motion primitives (design-language section 4) --- */
   --p-ease-out: cubic-bezier(0.2, 0, 0, 1); /* crisp Swiss baseline entrances */
   --p-ease-breathe: cubic-bezier(0.16, 1, 0.3, 1); /* the two licensed breathing moments ONLY */
+  --p-ease-wipe: cubic-bezier(0.65, 0, 0.35, 1); /* symmetric in-out for cover/wipe travel ONLY
+     (a cover crossing the frame accelerates in and decelerates out; entrances stay ease-out).
+     Charter-amendment candidate, motion lab 2026-07-07. */
   --p-dur-fast: 200ms;
   --p-dur-base: 350ms; /* reduced from the scaffold 500ms */
   --p-dur-breathe: 600ms;
@@ -131,6 +134,7 @@
   /* --- Motion roles --- */
   --ease-out: var(--p-ease-out);
   --ease-breathe: var(--p-ease-breathe);
+  --ease-wipe: var(--p-ease-wipe);
   --dur-fast: var(--p-dur-fast);
   --dur-base: var(--p-dur-base);
   --dur-breathe: var(--p-dur-breathe);

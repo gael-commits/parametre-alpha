@@ -22,6 +22,7 @@ export interface MotionTokens {
   durBreathe: number;
   easeOut: string; // CustomEase id for --ease-out (crisp Swiss baseline)
   easeBreathe: string; // CustomEase id for --ease-breathe (the 2 licensed moments ONLY)
+  easeWipe: string; // CustomEase id for --ease-wipe (cover/wipe travel ONLY, in-out)
 }
 
 // Fallbacks mirror tokens.css so a failed read degrades to the charter values.
@@ -31,6 +32,7 @@ export const T: MotionTokens = {
   durBreathe: 0.6,
   easeOut: 'tokenEaseOut',
   easeBreathe: 'tokenEaseBreathe',
+  easeWipe: 'tokenEaseWipe',
 };
 
 let loaded = false;
@@ -58,6 +60,7 @@ export function loadTokens(): MotionTokens {
   // The exact charter curves, not power-ease approximations (design-language 4.1/4.2).
   CustomEase.create(T.easeOut, bezier('--ease-out', '0.2, 0, 0, 1'));
   CustomEase.create(T.easeBreathe, bezier('--ease-breathe', '0.16, 1, 0.3, 1'));
+  CustomEase.create(T.easeWipe, bezier('--ease-wipe', '0.65, 0, 0.35, 1'));
 
   loaded = true;
   return T;
