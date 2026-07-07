@@ -25,15 +25,16 @@ export interface HomePicks {
   footer: FooterPick;
 }
 
-// hero 'b' LOCKED (Gael 2026-07-07, motion lab). The rest defaults to the pre-deep-dive
-// treatment until its pick lands in the WDEC.
+// LOCKED picks (Gael 2026-07-07, motion lab): hero b (Lando block reveal), steps d
+// (masked line rise), reveal c (headings block-reveal system), mark b (ink-dry fade),
+// footer b (one crisp entrance). follow: A-or-C pending Gael's browser compare.
 export const HOME_DEFAULTS: HomePicks = {
   hero: 'b',
   follow: 'a',
-  steps: 'a',
-  reveal: 'a',
-  mark: 'a',
-  footer: 'a',
+  steps: 'd',
+  reveal: 'c',
+  mark: 'b',
+  footer: 'b',
 };
 
 export function homeChoreography(picks: HomePicks, ctx: ChoreoCtx): void {

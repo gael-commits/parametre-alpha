@@ -33,8 +33,8 @@ const questions = [
     param: 'steps',
     label: 'étapes',
     options: [
-      { v: 'a', label: 'A. Fondu montant au tempo souffle (traitement actuel)' },
-      { v: 'd', label: 'D. Montée masquée ligne par ligne (le geste du héros C)' },
+      { v: 'd', label: 'D. Montée masquée ligne par ligne (VERROUILLÉ)' },
+      { v: 'a', label: 'A. Fondu montant au tempo souffle' },
       { v: 'b', label: 'B. Balayage masqué par étape' },
       { v: 'c', label: 'C. Étapes nettes, le souffle passe au titre de clôture' },
     ],
@@ -43,8 +43,8 @@ const questions = [
     param: 'reveal',
     label: 'défilement',
     options: [
-      { v: 'c', label: 'C. Titres en bloc encre décalé, corps en fondu, boutons en balayage' },
-      { v: 'a', label: 'A. Uniforme, 12px pour toutes les sections (actuel)' },
+      { v: 'c', label: 'C. Titres en bloc encre décalé, corps en fondu, boutons en balayage (VERROUILLÉ)' },
+      { v: 'a', label: 'A. Uniforme, 12px pour toutes les sections' },
       { v: 'b', label: 'B. Pondéré par section : bandes légères en fondu seul' },
     ],
   },
@@ -52,8 +52,8 @@ const questions = [
     param: 'mark',
     label: 'marque',
     options: [
-      { v: 'a', label: 'A. Le deux-points se pose par échelle (actuel)' },
-      { v: 'b', label: 'B. Fondu type encre qui sèche, sans échelle' },
+      { v: 'b', label: 'B. Fondu type encre qui sèche, sans échelle (VERROUILLÉ)' },
+      { v: 'a', label: 'A. Le deux-points se pose par échelle' },
       { v: 'c', label: 'C. Statique, aucune entrée' },
     ],
   },
@@ -61,8 +61,8 @@ const questions = [
     param: 'footer',
     label: 'pied',
     options: [
-      { v: 'a', label: 'A. Immobile (actuel)' },
-      { v: 'b', label: 'B. Une entrée nette du bloc pied de page' },
+      { v: 'b', label: 'B. Une entrée nette du bloc pied de page (VERROUILLÉ)' },
+      { v: 'a', label: 'A. Immobile' },
     ],
   },
 ];
@@ -92,10 +92,10 @@ const questions = [
   const picks: HomePicks = {
     hero: pick('hero', ['b', 'a', 'c'] as const),
     follow: pick('suite', ['a', 'b', 'c'] as const),
-    steps: pick('steps', ['a', 'd', 'b', 'c'] as const),
+    steps: pick('steps', ['d', 'a', 'b', 'c'] as const),
     reveal: pick('reveal', ['c', 'a', 'b'] as const),
-    mark: pick('mark', ['a', 'b', 'c'] as const),
-    footer: pick('footer', ['a', 'b'] as const),
+    mark: pick('mark', ['b', 'a', 'c'] as const),
+    footer: pick('footer', ['b', 'a'] as const),
   };
   let handle = initMotion({ page: 'home', picks });
   (window as unknown as { __motionLab: { replay(): void } }).__motionLab = {

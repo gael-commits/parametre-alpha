@@ -28,14 +28,16 @@ export interface SectorPicks {
   footer: FooterPick;
 }
 
+// Mirrors the locked homepage picks (Gael 2026-07-07); hero 'same' locks the sector
+// hero to the homepage block reveal.
 export const SECTOR_DEFAULTS: SectorPicks = {
   hero: 'same',
   homeHero: 'b',
   follow: 'a',
-  steps: 'a',
-  reveal: 'a',
-  mark: 'a',
-  footer: 'a',
+  steps: 'd',
+  reveal: 'c',
+  mark: 'b',
+  footer: 'b',
 };
 
 export function sectorChoreography(picks: SectorPicks, ctx: ChoreoCtx): void {
