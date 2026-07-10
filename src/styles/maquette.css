@@ -929,3 +929,9 @@ body.wf-overlay-lock {
     grid-template-columns: 1fr;
   }
 }
+
+/* Grid-blowout guard: sections must never size the page column by intrinsic
+   min-content (aspect-ratio + min-height transfers, long mono lines). */
+.wf-page > .wf-section {
+  min-width: 0;
+}
