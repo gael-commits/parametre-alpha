@@ -1,0 +1,22 @@
+---
+const links = [
+  { label: 'Services', href: '/maquette/services/' },
+  { label: 'Secteurs', href: '/maquette/#portes' },
+  { label: 'Contact', href: '/maquette/contact/' },
+];
+---
+
+<header class="wf-nav">
+  <a class="wf-mark" href="/maquette/">
+    <span>parametre</span><span class="wf-red">:</span><span>art</span>
+  </a>
+  <nav class="wf-nav__links">
+    {
+      links.map((link) => (
+        <a class="wf-nav__link" href={link.href}>
+          {link.label}
+        </a>
+      ))
+    }
+  </nav>
+</header>

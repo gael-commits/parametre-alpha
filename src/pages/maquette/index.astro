@@ -1,0 +1,90 @@
+---
+import MaquetteLayout from '../../layouts/MaquetteLayout.astro';
+
+const services = [
+  'Sites & landing pages',
+  'E-commerce',
+  'Visibilité',
+  'Relation client',
+  'Stratégie',
+  'Suivi',
+];
+
+const steps = [
+  'On parle. Trente minutes pour comprendre votre établissement, votre clientèle et ce qui vous ferait vraiment avancer.',
+  'On construit. Vous échangez directement avec la personne qui conçoit et réalise votre projet, sans intermédiaire.',
+  'On suit. Votre présence en ligne travaille pour vous, et vous savez à tout moment où en sont les choses.',
+];
+---
+
+<MaquetteLayout title="Maquette · parametre:art">
+  <div class="wf-page">
+    <section class="wf-section wf-reveal" id="portes">
+      <span class="wf-chip">1 · héros</span>
+      <div class="wf-hero-placeholder">
+        <span class="wf-mono">héros + cadran + 3 portes · construit à l'étape M2</span>
+      </div>
+    </section>
+
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">2 · tension</span>
+      <div class="wf-tension">
+        <span class="wf-mono">tension · réécriture WDEC-016 à venir</span>
+        <div class="wf-bars">
+          <span class="wf-bar w-100"></span>
+          <span class="wf-bar w-80"></span>
+          <span class="wf-bar w-60"></span>
+        </div>
+        <span class="wf-margin-note">sorties cadran · v1.5</span>
+      </div>
+    </section>
+
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">3 · services</span>
+      <div class="wf-service-grid">
+        {
+          services.map((service, index) => (
+            <a class="wf-card" href="/maquette/services/">
+              <span class="wf-card__index">{String(index + 1).padStart(2, '0')}</span>
+              <h2 class="wf-card__title">{service}</h2>
+              <span class="wf-bar w-80"></span>
+            </a>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">4 · preuve / démos</span>
+      <div class="wf-demo-grid">
+        <div class="wf-media"><span class="wf-pill">démo · bientôt</span></div>
+        <div class="wf-media"><span class="wf-pill">démo · bientôt</span></div>
+        <div class="wf-media"><span class="wf-pill">démo · bientôt</span></div>
+      </div>
+    </section>
+
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">5 · comment on travaille</span>
+      <h2 class="wf-heading">Un interlocuteur, du premier échange à la mise en ligne.</h2>
+      <div class="wf-steps">
+        {
+          steps.map((step) => (
+            <div class="wf-step">
+              <span class="wf-step__pip"></span>
+              <p>{step}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">6 · appel final</span>
+      <h2 class="wf-heading">Construisons un succès qui dure.</h2>
+      <div class="wf-final">
+        <a class="wf-button-primary" href="/maquette/contact/">Réserver un échange</a>
+        <a class="wf-link-secondary" href="/maquette/services/">voir les services</a>
+      </div>
+    </section>
+  </div>
+</MaquetteLayout>

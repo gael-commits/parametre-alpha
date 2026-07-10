@@ -1,0 +1,40 @@
+---
+const year = new Date().getFullYear();
+
+const sectorLinks = [
+  { label: 'Hospitalité événementiel', href: '/maquette/secteurs/hospitalite-evenementiel/' },
+  { label: 'Terroir producteurs', href: '/maquette/secteurs/terroir-producteurs/' },
+  { label: 'Formation clubs inscriptions', href: '/maquette/secteurs/formation-clubs-inscriptions/' },
+];
+---
+
+<footer class="wf-footer">
+  <div class="wf-footer__inner">
+    <section class="wf-footer__col">
+      <a class="wf-mark" href="/maquette/">
+        <span>parametre</span><span class="wf-red">:</span><span>art</span>
+      </a>
+      <span class="wf-label-bar">identifiant studio · à écrire</span>
+      <p>Haute-Savoie · arc lémanique</p>
+    </section>
+
+    <section class="wf-footer__col">
+      <h2>plan du site</h2>
+      <a href="/maquette/services/">Services</a>
+      {sectorLinks.map((link) => <a href={link.href}>{link.label}</a>)}
+      <a href="/maquette/contact/">Contact</a>
+    </section>
+
+    <section class="wf-footer__col">
+      <h2>légal</h2>
+      <a href="/maquette/mentions-legales/">Mentions légales</a>
+      <span class="wf-label-bar">confidentialité · à venir</span>
+      <span class="wf-label-bar">crédits · à venir</span>
+      <a href="mailto:contact@parametre.art">contact@parametre.art</a>
+    </section>
+  </div>
+  <div class="wf-footer__bottom">
+    <span>© {year}</span>
+    <span class="wf-lang-placeholder" aria-disabled="true">FR · <span>EN</span></span>
+  </div>
+</footer>
