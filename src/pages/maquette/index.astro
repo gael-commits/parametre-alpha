@@ -242,6 +242,25 @@ const doors = [
         if (event.key === 'Escape' && activeOverlay) {
           event.preventDefault();
           closeOverlay(activeOverlay, true);
+          return;
+        }
+        if (event.key === 'Tab' && activeOverlay) {
+          var focusables = activeOverlay.querySelectorAll(
+            'button, [href], input, textarea, select, [tabindex]:not([tabindex="-1"])'
+          );
+          if (!focusables.length) return;
+          var first = focusables[0];
+          var last = focusables[focusables.length - 1];
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          } else if (!activeOverlay.contains(document.activeElement)) {
+            event.preventDefault();
+            first.focus();
+          }
         }
       });
     })();
