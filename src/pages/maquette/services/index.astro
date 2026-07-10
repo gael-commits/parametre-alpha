@@ -1,14 +1,88 @@
 ---
 import MaquetteLayout from '../../../layouts/MaquetteLayout.astro';
+
+const services = [
+  'Sites & landing pages',
+  'E-commerce',
+  'Visibilité',
+  'Relation client',
+  'Stratégie',
+  'Suivi',
+];
+
+const doorLinks = [
+  { label: 'hospitalité & événementiel', href: '/maquette/secteurs/hospitalite-evenementiel/' },
+  { label: 'terroir & producteurs', href: '/maquette/secteurs/terroir-producteurs/' },
+  { label: 'formation, clubs & inscriptions', href: '/maquette/secteurs/formation-clubs-inscriptions/' },
+];
+
+const steps = ['On parle', 'On construit', 'On suit'];
 ---
 
 <MaquetteLayout title="Services · maquette">
-  <section class="wf-section wf-stub wf-reveal">
-    <span class="wf-chip">services</span>
-    <div class="wf-bars">
-      <span class="wf-bar w-100"></span>
-      <span class="wf-bar w-80"></span>
-      <span class="wf-bar w-60"></span>
-    </div>
-  </section>
+  <div class="wf-page">
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">1 · introduction</span>
+      <div class="wf-door-stack">
+        <span class="wf-mono">introduction · copie à venir</span>
+        <div class="wf-bars">
+          <span class="wf-bar w-100"></span>
+          <span class="wf-bar w-80"></span>
+          <span class="wf-bar w-60"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">2 · six services</span>
+      <div class="wf-door-stack">
+        <span class="wf-mono">pages détail · v1.x</span>
+        <div class="wf-service-grid">
+          {
+            services.map((service, index) => (
+              <article class="wf-card wf-service-card">
+                <span class="wf-card__index">{String(index + 1).padStart(2, '0')}</span>
+                <h2 class="wf-card__title">{service}</h2>
+                {service === 'Stratégie' ? (
+                  <p class="wf-card__blurb">Votre prochain projet, chiffré et défendable.</p>
+                ) : (
+                  <span class="wf-bar w-80"></span>
+                )}
+                <div class="wf-media wf-service-card__teaser">
+                  <span class="wf-pill">bientôt</span>
+                </div>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">3 · méthode</span>
+      <div class="wf-method">
+        {
+          steps.map((step) => (
+            <div class="wf-method__item">
+              <span class="wf-step__pip" aria-hidden="true"></span>
+              <div class="wf-method__body">
+                <span class="wf-mono">{step}</span>
+                <span class="wf-bar w-80"></span>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">4 · appel final</span>
+      <div class="wf-final wf-final--stack">
+        <a class="wf-button-primary" href="/maquette/contact/">Réserver un échange</a>
+        <div class="wf-door-link-row">
+          {doorLinks.map((link) => <a class="wf-link-secondary" href={link.href}>{link.label}</a>)}
+        </div>
+      </div>
+    </section>
+  </div>
 </MaquetteLayout>

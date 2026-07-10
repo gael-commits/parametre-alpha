@@ -1,4 +1,12 @@
-<div class="wf-dial" data-wf-dial>
+---
+const { compact = false, size = 'default', tone = 'accent' } = Astro.props;
+const className = ['wf-dial', compact || size === 'small' ? 'wf-dial--small' : '']
+  .filter(Boolean)
+  .join(' ');
+const baseFill = tone === 'neutral' ? '#d9d9d9' : '#E63946';
+---
+
+<div class={className} data-wf-dial>
   <svg class="wf-dial__svg" viewBox="0 0 420 420" aria-hidden="true" focusable="false">
     <circle class="wf-dial__outer" cx="210" cy="210" r="198" fill="none" />
     <g class="wf-dial__dash-track">
@@ -15,7 +23,7 @@
         cx="210"
         cy="210"
         r="50"
-        fill="#E63946"
+        fill={baseFill}
       />
 
       <g class="wf-dial__state" data-wf-dial-world="1">

@@ -1,14 +1,32 @@
 ---
 import MaquetteLayout from '../../../../layouts/MaquetteLayout.astro';
+import WfDoor from '../../../../components/maquette/WfDoor.astro';
+
+const door = {
+  glyph: 'terroir',
+  kicker: 'secteurs · 02 · terroir & producteurs',
+  title: 'La qualité se sait. Encore faut-il la trouver.',
+  telemetry: [
+    "visibilité : en cours d'analyse",
+    'commandes : suivies',
+    'clients qui reviennent : suivi actif',
+  ],
+  proofs: [
+    {
+      caption:
+        "Dans la région, des maisons établies depuis un demi-siècle ont mis leur premier site en ligne en 2024. Le travail se sait, le nom circule ; en ligne, il ne renvoie parfois qu'une fiche vide. C'est là que se perdent les visites, les commandes et les nouveaux clients.",
+      source: 'Relevé parametre 2026, producteurs de Savoie et du Léman.',
+    },
+    {
+      caption:
+        "Une boutique en ligne bien tenue rend la marge que la distribution retient. Les domaines qui l'ont compris ne la tiennent pas seuls : le site, la boutique et les relances sont confiés à quelqu'un dont c'est le métier.",
+    },
+  ],
+  services: ['Visibilité', 'E-commerce', 'Relation client', 'Sites & landing pages'],
+  approachHeading: 'Le domaine se visite, la cave se commande.',
+};
 ---
 
 <MaquetteLayout title="Terroir producteurs · maquette">
-  <section class="wf-section wf-stub wf-reveal">
-    <span class="wf-chip">terroir producteurs</span>
-    <div class="wf-bars">
-      <span class="wf-bar w-100"></span>
-      <span class="wf-bar w-80"></span>
-      <span class="wf-bar w-60"></span>
-    </div>
-  </section>
+  <WfDoor door={door} />
 </MaquetteLayout>

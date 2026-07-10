@@ -1,14 +1,33 @@
 ---
 import MaquetteLayout from '../../../../layouts/MaquetteLayout.astro';
+import WfDoor from '../../../../components/maquette/WfDoor.astro';
+
+const door = {
+  glyph: 'hospitalite',
+  kicker: 'secteurs · 01 · hospitalité & événementiel',
+  title: 'Une présence en ligne à la hauteur de votre maison.',
+  telemetry: [
+    'réservations directes : suivi actif',
+    "visibilité : en cours d'analyse",
+    'demandes : suivies',
+  ],
+  proofs: [
+    {
+      caption:
+        "Une réservation directe coûte à un hôtel environ 3,5 % du séjour. La même réservation, passée par une plateforme, coûte de 12 à 28 %. Sur une saison, l'écart finance largement un site qui travaille.",
+      source: 'Source : D-EDGE, rapport de distribution hôtelière, 2025.',
+    },
+    {
+      caption:
+        "Booking détient environ 71 % du marché européen des agences de voyage en ligne, et à l'échelle du continent, à peine la moitié des réservations hôtelières arrivent encore en direct. Chaque réservation ramenée sur votre site est une marge retrouvée, et un client dont vous gardez le contact.",
+      source: 'Sources : études HOTREC, 2021 et 2023.',
+    },
+  ],
+  services: ['Sites & landing pages', 'Visibilité', 'Relation client', 'Suivi'],
+  approachHeading: 'Vos clients réservent chez vous. Directement.',
+};
 ---
 
 <MaquetteLayout title="Hospitalité événementiel · maquette">
-  <section class="wf-section wf-stub wf-reveal">
-    <span class="wf-chip">hospitalité événementiel</span>
-    <div class="wf-bars">
-      <span class="wf-bar w-100"></span>
-      <span class="wf-bar w-80"></span>
-      <span class="wf-bar w-60"></span>
-    </div>
-  </section>
+  <WfDoor door={door} />
 </MaquetteLayout>

@@ -1,0 +1,128 @@
+---
+import WfDial from './WfDial.astro';
+
+const { door } = Astro.props;
+
+const bars = ['w-100', 'w-80', 'w-60', 'w-40'];
+---
+
+<div class="wf-page wf-door-page">
+  <section class="wf-section wf-door-hero-section wf-reveal">
+    <span class="wf-chip">1 · héros / atterrissage</span>
+    <div class="wf-door-hero">
+      <div class="wf-door-hero__media wf-media">
+        <div class="wf-door-glyph" aria-hidden="true">
+          {
+            door.glyph === 'hospitalite' && (
+              <svg viewBox="0 0 120 120" focusable="false">
+                <path d="M34 38h50v34H34z" />
+                <path d="M28 72h62" />
+                <path d="M40 72v18M78 72v18" />
+                <circle cx="36" cy="30" r="10" />
+                <path d="M46 30h34l8 8" />
+                <path d="M64 30v14" />
+              </svg>
+            )
+          }
+          {
+            door.glyph === 'terroir' && (
+              <svg viewBox="0 0 120 120" focusable="false">
+                <path d="M50 16h20v24l10 16v38c0 8-6 14-14 14H54c-8 0-14-6-14-14V56l10-16V16z" />
+                <path d="M50 40h20" />
+                <path d="M42 68h36" />
+                <path d="M48 82h24" />
+              </svg>
+            )
+          }
+          {
+            door.glyph === 'formation' && (
+              <svg viewBox="0 0 120 120" focusable="false">
+                <rect x="24" y="28" width="72" height="66" rx="6" />
+                <path d="M24 46h72" />
+                <path d="M42 20v16M78 20v16" />
+                <path d="M42 62h12M66 62h12M42 78h12M66 78h12" />
+              </svg>
+            )
+          }
+        </div>
+        <div class="wf-door-hero__plate">
+          <span class="wf-mono">{door.kicker}</span>
+          <h1>{door.title}</h1>
+        </div>
+      </div>
+
+      <div class="wf-door-hero__station">
+        <WfDial compact tone="neutral" />
+        <div class="wf-door-telemetry" aria-label="paramètres">
+          {door.telemetry.map((line) => <span class="wf-mono">{line}</span>)}
+        </div>
+      </div>
+    </div>
+    <span class="wf-mono wf-door-hero__note">image produit-héros à venir · spec point focal</span>
+  </section>
+
+  <section class="wf-section wf-reveal">
+    <span class="wf-chip">2 · douleur</span>
+    <div class="wf-door-stack">
+      <span class="wf-mono">constat · copie à venir</span>
+      <div class="wf-bars">
+        {bars.map((width) => <span class={`wf-bar ${width}`}></span>)}
+      </div>
+      {
+        door.proofs?.length > 0 && (
+          <div class="wf-proof-grid">
+            {door.proofs.map((proof) => (
+              <article class="wf-proof">
+                <p class="wf-proof__body">{proof.caption}</p>
+                {proof.source && <span class="wf-mono">{proof.source}</span>}
+              </article>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <section class="wf-section wf-reveal">
+    <span class="wf-chip">3 · réponses / services</span>
+    <div class="wf-service-grid">
+      {
+        door.services.map((service, index) => (
+          <a class="wf-card" href="/maquette/services/">
+            <span class="wf-card__index">{String(index + 1).padStart(2, '0')}</span>
+            <h2 class="wf-card__title">{service}</h2>
+            <span class="wf-bar w-80"></span>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="wf-section wf-reveal">
+    <span class="wf-chip">4 · démo</span>
+    <div class="wf-media wf-door-demo">
+      <span class="wf-pill">démo · bientôt</span>
+    </div>
+  </section>
+
+  <section class="wf-section wf-reveal">
+    <span class="wf-chip">5 · approche / appel</span>
+    <div class="wf-door-stack">
+      {
+        door.approachHeading ? (
+          <h2 class="wf-heading wf-door-heading">{door.approachHeading}</h2>
+        ) : (
+          <span class="wf-mono">approche · réécriture WDEC-018 à venir</span>
+        )
+      }
+      <div class="wf-bars">
+        {(door.approachHeading ? bars.slice(0, 2) : bars.slice(0, 3)).map((width) => (
+          <span class={`wf-bar ${width}`}></span>
+        ))}
+      </div>
+      <div class="wf-final">
+        <a class="wf-button-primary" href="/maquette/contact/">Réserver un échange</a>
+      </div>
+    </div>
+  </section>
+</div>

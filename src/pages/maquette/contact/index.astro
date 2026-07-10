@@ -3,12 +3,53 @@ import MaquetteLayout from '../../../layouts/MaquetteLayout.astro';
 ---
 
 <MaquetteLayout title="Contact · maquette">
-  <section class="wf-section wf-stub wf-reveal">
-    <span class="wf-chip">contact</span>
-    <div class="wf-bars">
-      <span class="wf-bar w-100"></span>
-      <span class="wf-bar w-80"></span>
-      <span class="wf-bar w-60"></span>
-    </div>
-  </section>
+  <div class="wf-page">
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">1 · accroche</span>
+      <div class="wf-door-stack">
+        <span class="wf-mono">accroche · à écrire</span>
+        <div class="wf-bars">
+          <span class="wf-bar w-100"></span>
+          <span class="wf-bar w-80"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">2 · formulaire</span>
+      <form class="wf-contact-form" novalidate>
+        <label class="wf-field" for="wf-contact-name">
+          <span class="wf-mono">nom</span>
+          <input id="wf-contact-name" type="text" disabled />
+        </label>
+        <label class="wf-field" for="wf-contact-email">
+          <span class="wf-mono">email</span>
+          <input id="wf-contact-email" type="email" disabled />
+        </label>
+        <label class="wf-field" for="wf-contact-message">
+          <span class="wf-mono">message</span>
+          <textarea id="wf-contact-message" rows="6" disabled></textarea>
+        </label>
+        <button class="wf-button-primary" type="button" aria-disabled="true">Envoyer</button>
+        <span class="wf-mono">événement GA4 à l'envoi · v1</span>
+      </form>
+    </section>
+
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">3 · alternatives directes</span>
+      <div class="wf-door-stack">
+        <a class="wf-link-secondary wf-contact-mail" href="mailto:contact@parametre.art">contact@parametre.art</a>
+        <span class="wf-mono">option basse friction · à définir</span>
+        <span class="wf-bar w-80"></span>
+      </div>
+    </section>
+
+    <section class="wf-section wf-reveal">
+      <span class="wf-chip">4 · zone de service</span>
+      <div class="wf-door-stack">
+        <span class="wf-mono">Haute-Savoie · arc lémanique</span>
+        <span class="wf-bar w-60"></span>
+      </div>
+    </section>
+  </div>
 </MaquetteLayout>
