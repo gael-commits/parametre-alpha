@@ -415,3 +415,297 @@ select {
     width: min(100% - 2rem, var(--grid-max));
   }
 }
+
+.wf-section--hero {
+  overflow: hidden;
+}
+
+.wf-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 420px);
+  grid-template-areas:
+    "copy dial"
+    "doors dial";
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+}
+
+.wf-hero__copy {
+  grid-area: copy;
+  display: grid;
+  gap: var(--space-m);
+  max-width: 42rem;
+}
+
+.wf-hero__title {
+  max-width: 12ch;
+  margin: 0;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: 500;
+  line-height: var(--leading-hero);
+  letter-spacing: 0;
+}
+
+.wf-hero__accent {
+  color: var(--color-accent);
+}
+
+.wf-hero__support {
+  margin: 0;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 500;
+  line-height: var(--leading-tight);
+  letter-spacing: 0;
+}
+
+.wf-hero__identifier {
+  display: grid;
+  gap: var(--space-xs);
+  max-width: 24rem;
+}
+
+.wf-hero__triggers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-m);
+  align-items: center;
+}
+
+.wf-hero-trigger,
+.wf-overlay__close {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--color-label);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  cursor: pointer;
+}
+
+.wf-hero-trigger:hover,
+.wf-hero-trigger:focus-visible,
+.wf-overlay__close:hover,
+.wf-overlay__close:focus-visible {
+  color: var(--color-ink);
+}
+
+.wf-hero-trigger:focus-visible,
+.wf-overlay__close:focus-visible,
+.wf-door-card:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 4px;
+}
+
+.wf-hero__dial {
+  grid-area: dial;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+}
+
+.wf-dial {
+  width: min(100%, 420px);
+  aspect-ratio: 1;
+}
+
+.wf-dial__svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.wf-dial__outer,
+.wf-dial__inner {
+  stroke: #d9d9d9;
+  stroke-width: 1.5;
+}
+
+.wf-dial__inner {
+  stroke-dasharray: 4 10;
+}
+
+.wf-dial__dash-track {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: wf-dial-rotate 40s linear infinite;
+}
+
+.wf-dial__tick {
+  fill: var(--color-label);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+
+.wf-dial__state {
+  opacity: 0;
+  transition: opacity 200ms var(--ease-out);
+}
+
+.wf-dial__state.is-visible {
+  opacity: 1;
+}
+
+@keyframes wf-dial-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.wf-door-list {
+  grid-area: doors;
+  display: grid;
+  gap: var(--space-s);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.wf-door-list li {
+  margin: 0;
+}
+
+.wf-door-card {
+  display: grid;
+  gap: var(--space-xs);
+  min-height: 6.5rem;
+  padding: var(--space-s);
+  border: 1px solid var(--color-hairline);
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  color: var(--color-ink);
+  text-decoration: none;
+  transition: transform 180ms var(--ease-out);
+  will-change: transform;
+}
+
+.wf-door-card.is-spotlit {
+  border-color: #b9b9b9;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.07);
+  transform: translateY(-2px);
+}
+
+.wf-door-card__text {
+  max-width: 42rem;
+  color: var(--color-label);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+body.wf-overlay-lock {
+  overflow: hidden;
+}
+
+.wf-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: var(--grid-inset);
+  background: rgba(255, 255, 255, 0.96);
+  opacity: 0;
+  transition: opacity 250ms var(--ease-out);
+}
+
+.wf-overlay[hidden] {
+  display: none;
+}
+
+.wf-overlay.is-open {
+  opacity: 1;
+}
+
+.wf-overlay__inner {
+  position: relative;
+  display: grid;
+  gap: var(--space-l);
+  width: min(100%, 44rem);
+  min-height: min(32rem, calc(100vh - (var(--grid-inset) * 2)));
+  padding: clamp(2rem, 5vw, 4rem);
+  border: 1px solid var(--color-hairline);
+  background: #fff;
+}
+
+.wf-overlay__close {
+  position: absolute;
+  top: var(--space-m);
+  right: var(--space-m);
+}
+
+.wf-overlay__chip {
+  align-self: start;
+}
+
+.wf-overlay__bars {
+  display: grid;
+  gap: 14px;
+  width: min(100%, 30rem);
+}
+
+.wf-overlay__cta {
+  align-self: end;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wf-dial__dash-track {
+    animation: none;
+  }
+
+  .wf-dial__state,
+  .wf-overlay,
+  .wf-door-card {
+    transition: none;
+  }
+}
+
+@media (max-width: 1023px) {
+  .wf-hero {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "dial"
+      "copy"
+      "doors";
+    justify-items: stretch;
+  }
+
+  .wf-hero__copy {
+    max-width: none;
+  }
+
+  .wf-hero__title {
+    max-width: 11ch;
+  }
+
+  .wf-hero__dial {
+    justify-self: center;
+  }
+
+  .wf-dial {
+    width: min(100%, 260px);
+  }
+
+  .wf-door-list {
+    width: 100%;
+  }
+
+  .wf-overlay {
+    padding: var(--space-m);
+  }
+
+  .wf-overlay__inner {
+    min-height: min(30rem, calc(100vh - (var(--space-m) * 2)));
+    padding: var(--space-l) var(--space-m);
+  }
+}

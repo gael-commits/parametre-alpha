@@ -1,0 +1,54 @@
+<div class="wf-dial" data-wf-dial>
+  <svg class="wf-dial__svg" viewBox="0 0 420 420" aria-hidden="true" focusable="false">
+    <circle class="wf-dial__outer" cx="210" cy="210" r="198" fill="none" />
+    <g class="wf-dial__dash-track">
+      <circle class="wf-dial__inner" cx="210" cy="210" r="158" fill="none" />
+    </g>
+    <text class="wf-dial__tick" x="210" y="52" text-anchor="middle">01</text>
+    <text class="wf-dial__tick" x="344" y="284" text-anchor="middle">02</text>
+    <text class="wf-dial__tick" x="76" y="284" text-anchor="middle">03</text>
+
+    <g class="wf-dial__iris">
+      <circle
+        class="wf-dial__state is-visible"
+        data-wf-dial-world="base"
+        cx="210"
+        cy="210"
+        r="50"
+        fill="#E63946"
+      />
+
+      <g class="wf-dial__state" data-wf-dial-world="1">
+        <circle cx="210" cy="210" r="54" fill="#FAC775" stroke="#BA7517" stroke-width="1.5" />
+        <rect x="184" y="180" width="52" height="58" rx="3" fill="none" stroke="#111111" stroke-width="3" />
+        <rect x="204" y="216" width="12" height="22" fill="none" stroke="#111111" stroke-width="3" />
+        <rect x="194" y="191" width="9" height="9" fill="none" stroke="#111111" stroke-width="2" />
+        <rect x="217" y="191" width="9" height="9" fill="none" stroke="#111111" stroke-width="2" />
+        <rect x="194" y="207" width="9" height="9" fill="none" stroke="#111111" stroke-width="2" />
+        <rect x="217" y="207" width="9" height="9" fill="none" stroke="#111111" stroke-width="2" />
+      </g>
+
+      <g class="wf-dial__state" data-wf-dial-world="2">
+        <circle cx="210" cy="210" r="54" fill="#FAC775" stroke="#BA7517" stroke-width="1.5" />
+        <path
+          d="M202 176h16v20l10 16v34c0 7-5 12-12 12h-12c-7 0-12-5-12-12v-34l10-16V176Z"
+          fill="none"
+          stroke="#111111"
+          stroke-linejoin="round"
+          stroke-width="3"
+        />
+        <path d="M202 196h16" fill="none" stroke="#111111" stroke-linecap="round" stroke-width="3" />
+        <path d="M195 222h30" fill="none" stroke="#111111" stroke-linecap="round" stroke-width="2" />
+      </g>
+
+      <g class="wf-dial__state" data-wf-dial-world="3">
+        <circle cx="210" cy="210" r="54" fill="#FAC775" stroke="#BA7517" stroke-width="1.5" />
+        <rect x="180" y="186" width="60" height="56" rx="4" fill="none" stroke="#111111" stroke-width="3" />
+        <path d="M180 202h60" fill="none" stroke="#111111" stroke-width="3" />
+        <path d="M198 180v12M222 180v12" fill="none" stroke="#111111" stroke-linecap="round" stroke-width="3" />
+        <path d="M198 216h24M198 230h24" fill="none" stroke="#111111" stroke-linecap="round" stroke-width="2" />
+        <path d="M210 204v36" fill="none" stroke="#111111" stroke-width="2" />
+      </g>
+    </g>
+  </svg>
+</div>

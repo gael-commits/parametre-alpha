@@ -1,0 +1,24 @@
+---
+interface Props {
+  id: string;
+  chip: string;
+}
+
+const { id, chip } = Astro.props;
+const titleId = `${id}-title`;
+---
+
+<section class="wf-overlay" id={id} role="dialog" aria-modal="true" aria-labelledby={titleId} hidden data-wf-overlay>
+  <div class="wf-overlay__inner" data-wf-overlay-panel>
+    <button class="wf-overlay__close" type="button" data-wf-overlay-close>fermer</button>
+    <span class="wf-overlay__chip wf-mono" id={titleId}>{chip}</span>
+    <div class="wf-overlay__bars" aria-hidden="true">
+      <span class="wf-bar w-100"></span>
+      <span class="wf-bar w-80"></span>
+      <span class="wf-bar w-60"></span>
+      <span class="wf-bar w-40"></span>
+    </div>
+    <span class="wf-mono">contenu · à écrire</span>
+    <span class="wf-overlay__cta wf-bar w-60" aria-hidden="true"></span>
+  </div>
+</section>

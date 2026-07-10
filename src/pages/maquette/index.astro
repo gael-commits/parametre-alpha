@@ -1,5 +1,7 @@
 ---
 import MaquetteLayout from '../../layouts/MaquetteLayout.astro';
+import WfDial from '../../components/maquette/WfDial.astro';
+import WfOverlay from '../../components/maquette/WfOverlay.astro';
 
 const services = [
   'Sites & landing pages',
@@ -15,16 +17,88 @@ const steps = [
   'On construit. Vous échangez directement avec la personne qui conçoit et réalise votre projet, sans intermédiaire.',
   'On suit. Votre présence en ligne travaille pour vous, et vous savez à tout moment où en sont les choses.',
 ];
+
+const doors = [
+  {
+    index: '01',
+    label: 'hospitalité & événementiel',
+    text: 'Hôtels-restaurants, chalets et conciergeries, lieux et agences événementielles.',
+    href: '/maquette/secteurs/hospitalite-evenementiel/',
+  },
+  {
+    index: '02',
+    label: 'terroir & producteurs',
+    text: 'Vignerons, fromagers, brasseurs et producteurs de la région.',
+    href: '/maquette/secteurs/terroir-producteurs/',
+  },
+  {
+    index: '03',
+    label: 'formation, clubs & inscriptions',
+    text: 'Écoles privées et organismes de formation.',
+    href: '/maquette/secteurs/formation-clubs-inscriptions/',
+  },
+];
 ---
 
 <MaquetteLayout title="Maquette · parametre:art">
   <div class="wf-page">
-    <section class="wf-section wf-reveal" id="portes">
+    <section class="wf-section wf-section--hero wf-reveal">
       <span class="wf-chip">1 · héros</span>
-      <div class="wf-hero-placeholder">
-        <span class="wf-mono">héros + cadran + 3 portes · construit à l'étape M2</span>
+      <div class="wf-hero">
+        <div class="wf-hero__copy">
+          <h1 class="wf-hero__title">
+            Vos clients reviennent, votre maison <span class="wf-hero__accent" style="color: #E63946">grandit</span>.
+          </h1>
+          <p class="wf-hero__support">Sans vous en occuper.</p>
+          <div class="wf-hero__identifier">
+            <span class="wf-bar w-60" aria-hidden="true"></span>
+            <span class="wf-mono">identifiant · à écrire</span>
+          </div>
+          <div class="wf-hero__triggers">
+            <button
+              class="wf-hero-trigger"
+              type="button"
+              data-wf-overlay-trigger="wf-overlay-studio"
+              aria-controls="wf-overlay-studio"
+              aria-expanded="false"
+            >
+              Le studio
+            </button>
+            <button
+              class="wf-hero-trigger"
+              type="button"
+              data-wf-overlay-trigger="wf-overlay-work"
+              aria-controls="wf-overlay-work"
+              aria-expanded="false"
+            >
+              Ce qu'on fait
+            </button>
+          </div>
+        </div>
+
+        <div class="wf-hero__dial">
+          <WfDial />
+        </div>
+
+        <ul class="wf-door-list" id="portes" data-wf-door-list aria-label="Secteurs">
+          {
+            doors.map((door) => (
+              <li>
+                <a class="wf-door-card" href={door.href} data-wf-door>
+                  <span class="wf-door-card__label wf-mono">
+                    {door.index} {door.label}
+                  </span>
+                  <span class="wf-door-card__text">{door.text}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </section>
+
+    <WfOverlay id="wf-overlay-studio" chip="panneau · le studio" />
+    <WfOverlay id="wf-overlay-work" chip="panneau · ce qu'on fait" />
 
     <section class="wf-section wf-reveal">
       <span class="wf-chip">2 · tension</span>
@@ -87,4 +161,263 @@ const steps = [
       </div>
     </section>
   </div>
+
+  <script is:inline>
+    (function () {
+      var triggers = Array.prototype.slice.call(document.querySelectorAll('[data-wf-overlay-trigger]'));
+      var overlays = Array.prototype.slice.call(document.querySelectorAll('[data-wf-overlay]'));
+      var activeOverlay = null;
+      var activeTrigger = null;
+      var closeDelay = 250;
+
+      function setTriggerState(overlay, isOpen) {
+        triggers.forEach(function (trigger) {
+          if (trigger.getAttribute('data-wf-overlay-trigger') === overlay.id) {
+            trigger.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+          }
+        });
+      }
+
+      function closeOverlay(overlay, restoreFocus) {
+        if (!overlay || overlay.hidden) return;
+        if (overlay.wfCloseTimer) window.clearTimeout(overlay.wfCloseTimer);
+        overlay.classList.remove('is-open');
+        setTriggerState(overlay, false);
+        document.body.classList.remove('wf-overlay-lock');
+
+        if (restoreFocus !== false && activeTrigger) {
+          activeTrigger.focus();
+        }
+
+        overlay.wfCloseTimer = window.setTimeout(function () {
+          overlay.hidden = true;
+          overlay.wfCloseTimer = null;
+        }, closeDelay);
+
+        if (activeOverlay === overlay) {
+          activeOverlay = null;
+          activeTrigger = null;
+        }
+      }
+
+      function openOverlay(trigger) {
+        var overlay = document.getElementById(trigger.getAttribute('data-wf-overlay-trigger'));
+        if (!overlay) return;
+        if (activeOverlay && activeOverlay !== overlay) closeOverlay(activeOverlay, false);
+        if (overlay.wfCloseTimer) window.clearTimeout(overlay.wfCloseTimer);
+
+        activeOverlay = overlay;
+        activeTrigger = trigger;
+        overlay.hidden = false;
+        document.body.classList.add('wf-overlay-lock');
+        setTriggerState(overlay, true);
+
+        window.requestAnimationFrame(function () {
+          var closeButton = overlay.querySelector('[data-wf-overlay-close]');
+          overlay.classList.add('is-open');
+          if (closeButton) closeButton.focus();
+        });
+      }
+
+      triggers.forEach(function (trigger) {
+        trigger.addEventListener('click', function () {
+          openOverlay(trigger);
+        });
+      });
+
+      overlays.forEach(function (overlay) {
+        overlay.addEventListener('click', function (event) {
+          if (event.target === overlay) closeOverlay(overlay, true);
+        });
+
+        var closeButton = overlay.querySelector('[data-wf-overlay-close]');
+        if (closeButton) {
+          closeButton.addEventListener('click', function () {
+            closeOverlay(overlay, true);
+          });
+        }
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && activeOverlay) {
+          event.preventDefault();
+          closeOverlay(activeOverlay, true);
+        }
+      });
+    })();
+
+    (function () {
+      var list = document.querySelector('[data-wf-door-list]');
+      var dial = document.querySelector('[data-wf-dial]');
+      if (!list || !dial) return;
+
+      var cards = Array.prototype.slice.call(list.querySelectorAll('[data-wf-door]'));
+      var worlds = Array.prototype.slice.call(dial.querySelectorAll('[data-wf-dial-world]'));
+      var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var timer = 0;
+      var stepStartedAt = 0;
+      var remaining = 0;
+      var cycleIndex = 0;
+      var passCount = 0;
+      var paused = false;
+      var rested = false;
+      var clickedIndex = null;
+      var hoverIndex = null;
+      var focusIndex = null;
+
+      function closestDoor(target) {
+        if (!target || !target.closest) return null;
+        return target.closest('[data-wf-door]');
+      }
+
+      function randomDwell() {
+        return 3500 + Math.floor(Math.random() * 2001);
+      }
+
+      function clearTimer() {
+        if (!timer) return;
+        window.clearTimeout(timer);
+        timer = 0;
+      }
+
+      function showWorld(index) {
+        var target = index === null ? 'base' : String(index + 1);
+        worlds.forEach(function (world) {
+          world.classList.toggle('is-visible', world.getAttribute('data-wf-dial-world') === target);
+        });
+      }
+
+      function setSpotlit(index) {
+        cards.forEach(function (card, cardIndex) {
+          card.classList.toggle('is-spotlit', cardIndex === index);
+        });
+      }
+
+      function render() {
+        var previewIndex = hoverIndex !== null ? hoverIndex : focusIndex;
+
+        if (clickedIndex !== null) {
+          setSpotlit(clickedIndex);
+          showWorld(clickedIndex);
+          return;
+        }
+
+        if (previewIndex !== null) {
+          setSpotlit(previewIndex);
+          showWorld(previewIndex);
+          return;
+        }
+
+        if (reduce) {
+          setSpotlit(0);
+          showWorld(0);
+          return;
+        }
+
+        if (rested) {
+          setSpotlit(null);
+          showWorld(null);
+          return;
+        }
+
+        setSpotlit(cycleIndex);
+        showWorld(cycleIndex);
+      }
+
+      function schedule(delay) {
+        clearTimer();
+        remaining = delay;
+        stepStartedAt = Date.now();
+        timer = window.setTimeout(advance, delay);
+      }
+
+      function rest() {
+        rested = true;
+        clearTimer();
+        render();
+      }
+
+      function advance() {
+        timer = 0;
+        if (paused || clickedIndex !== null || rested) return;
+
+        cycleIndex += 1;
+        if (cycleIndex >= cards.length) {
+          cycleIndex = 0;
+          passCount += 1;
+          if (passCount >= 3) {
+            rest();
+            return;
+          }
+        }
+
+        render();
+        schedule(randomDwell());
+      }
+
+      function pauseCycle() {
+        if (reduce || rested || clickedIndex !== null || paused) return;
+        paused = true;
+        remaining = Math.max(0, remaining - (Date.now() - stepStartedAt));
+        clearTimer();
+      }
+
+      function resumeCycle() {
+        hoverIndex = null;
+        if (reduce || rested || clickedIndex !== null) {
+          render();
+          return;
+        }
+
+        if (paused) {
+          paused = false;
+          render();
+          schedule(remaining || randomDwell());
+        }
+      }
+
+      list.addEventListener('mouseenter', pauseCycle);
+      list.addEventListener('mouseleave', resumeCycle);
+
+      cards.forEach(function (card, index) {
+        card.addEventListener('mouseenter', function () {
+          hoverIndex = index;
+          render();
+        });
+
+        card.addEventListener('mouseleave', function () {
+          hoverIndex = null;
+          render();
+        });
+      });
+
+      list.addEventListener('focusin', function (event) {
+        var card = closestDoor(event.target);
+        if (!card) return;
+        focusIndex = cards.indexOf(card);
+        render();
+      });
+
+      list.addEventListener('focusout', function () {
+        window.setTimeout(function () {
+          var activeCard = document.activeElement && document.activeElement.closest
+            ? document.activeElement.closest('[data-wf-door]')
+            : null;
+          focusIndex = activeCard ? cards.indexOf(activeCard) : null;
+          render();
+        }, 0);
+      });
+
+      list.addEventListener('click', function (event) {
+        var card = closestDoor(event.target);
+        if (!card) return;
+        clickedIndex = cards.indexOf(card);
+        clearTimer();
+        render();
+      });
+
+      render();
+      if (!reduce) schedule(randomDwell());
+    })();
+  </script>
 </MaquetteLayout>
