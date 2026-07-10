@@ -940,4 +940,5 @@ body.wf-overlay-lock {
    media placeholders shrink to their container (they just get taller). */
 .wf-media {
   min-width: 0;
+  width: 100%;
 }
