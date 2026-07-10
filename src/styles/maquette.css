@@ -935,3 +935,9 @@ body.wf-overlay-lock {
 .wf-page > .wf-section {
   min-width: 0;
 }
+
+/* aspect-ratio + min-height transfers an automatic min inline-size; kill it so
+   media placeholders shrink to their container (they just get taller). */
+.wf-media {
+  min-width: 0;
+}
