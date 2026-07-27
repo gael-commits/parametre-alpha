@@ -95,19 +95,40 @@ const selfHref = Astro.url.pathname;
     min-height: 100vh;
     min-height: 100dvh;
     display: flex;
-    justify-content: center;
-    padding: var(--space-l);
+    padding: var(--space-l) clamp(1.5rem, 5vw, 4rem);
   }
 
-  /* === SPLASH LAYOUT === */
+  /* === SPLASH LAYOUT ===
+     Golden cannon (WDEC-004): hard left axis, content holds the golden-major
+     left, the right margin stays empty by design. Do not re-center. */
   .splash {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     width: 100%;
-    max-width: 680px;
     min-height: calc(100vh - var(--space-l) * 2);
     min-height: calc(100dvh - var(--space-l) * 2);
+  }
+
+  .splash__body,
+  .splash__footer {
+    margin-left: 15vw;
+  }
+
+  /* Body + contact travel as one group, centered with a slight downward seat;
+     the gap between them is fixed, not stretched by leftover height. */
+  .splash__body {
+    margin-top: auto;
+    padding-top: 8vh; /* optical seat: group sits slightly below viewport center */
+  }
+
+  .splash__footer {
+    margin-bottom: auto;
+  }
+
+  .splash__body > *,
+  .splash__footer {
+    max-width: min(62%, 620px);
   }
 
   .splash__header {
@@ -117,7 +138,6 @@ const selfHref = Astro.url.pathname;
   }
 
   .splash__body {
-    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -128,9 +148,12 @@ const selfHref = Astro.url.pathname;
     font-size: var(--text-l);
     font-weight: 400;
     line-height: 1.45;
-    max-width: 36ch;
     letter-spacing: -0.01em;
-    white-space: pre-line;
+    max-width: none; /* the <br> is the only intended break; natural wrap only when narrow */
+  }
+
+  .splash__tagline-accent {
+    color: var(--color-accent);
   }
 
   .splash__rule {
@@ -433,14 +456,43 @@ const selfHref = Astro.url.pathname;
     overflow: hidden;
   }
 
+  /* === TABLET (< 1024px) === */
+  @media (max-width: 1024px) {
+    .splash__body,
+    .splash__footer {
+      margin-left: 12vw;
+    }
+  }
+
   /* === MOBILE (< 768px) === */
   @media (max-width: 768px) {
     body {
-      padding: var(--space-m);
+      padding: var(--space-m) calc(var(--space-m) + 18px);
+    }
+
+    /* symmetric: left inset = body padding = the toggle's right inset */
+    .splash__body,
+    .splash__footer {
+      margin-left: 0;
+    }
+
+    .splash__body {
+      flex: 1;
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .splash__footer {
+      margin-bottom: 0;
     }
 
     .splash__header {
       padding-bottom: var(--space-l);
+    }
+
+    .splash__body > *,
+    .splash__footer {
+      max-width: none;
     }
 
     .splash__footer {
@@ -473,8 +525,12 @@ const selfHref = Astro.url.pathname;
 
     .splash__footer-actions {
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
       gap: var(--space-s);
+    }
+
+    .splash__contact-label {
+      text-align: center;
     }
 
     .splash__cta {
