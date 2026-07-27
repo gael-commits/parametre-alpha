@@ -25,7 +25,10 @@ const t = i18n.en;
 
     <div class="splash__body">
       <Wordmark />
-      <p class="splash__tagline">{t.tagline.before}<span class="splash__tagline-accent">{t.tagline.accent}</span>{t.tagline.after}<br />{t.tagline.sub}</p>
+      <p class="splash__tagline">
+        <span class="splash__line"><span class="splash__line-inner">{t.tagline.before}<span class="splash__tagline-accent">{t.tagline.accent}</span>{t.tagline.after}</span></span>
+        <span class="splash__line"><span class="splash__line-inner">{t.tagline.sub}</span></span>
+      </p>
       <hr class="splash__rule" />
       <p class="splash__status">{t.comingSoon}</p>
       <p class="splash__value-prop">{t.valueProp}</p>
@@ -34,7 +37,12 @@ const t = i18n.en;
     <footer class="splash__footer">
       <span class="splash__contact-label">{t.contactLabel}</span>
       <div class="splash__footer-actions">
-        <button class="splash__cta" data-modal-open>{t.ctaButton}</button>
+        <button class="splash__cta" data-modal-open aria-label={t.ctaButton}>
+          <span class="cta-roll" aria-hidden="true">
+            <span class="cta-roll__face cta-roll__face--top">{t.ctaButton.split('').map((c, i) => <span class="cta-roll__letter" style={`--li:${i}`}>{c}</span>)}</span>
+            <span class="cta-roll__face cta-roll__face--bottom">{t.ctaButton.split('').map((c, i) => <span class="cta-roll__letter" style={`--li:${i}`}>{c}</span>)}</span>
+          </span>
+        </button>
         <a href={t.linkedinUrl} target="_blank" rel="noopener" class="splash__footer-linkedin">{t.linkedinLabel}</a>
       </div>
     </footer>

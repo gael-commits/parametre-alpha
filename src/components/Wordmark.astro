@@ -1,6 +1,12 @@
 ---
+const head = 'parametre'.split('');
+const tail = 'art'.split('');
 ---
-<div class="wordmark">parametre<span class="wordmark__dot">:</span>art</div>
+<div class="wordmark" aria-label="parametre:art">
+  <span aria-hidden="true">
+    {head.map((c, i) => <span class="wordmark__char" style={`--ci:${i}`}>{c}</span>)}<span class="wordmark__dot">:</span>{tail.map((c, i) => <span class="wordmark__char wordmark__char--tail" style={`--ci:${i}`}>{c}</span>)}
+  </span>
+</div>
 
 <style>
   .wordmark {
@@ -11,7 +17,37 @@
     line-height: 1.1;
     color: var(--color-text);
   }
+  .wordmark__char {
+    display: inline-block;
+  }
   .wordmark__dot {
+    display: inline-block;
     color: var(--color-accent);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* Beat 1: "parametre" types, stepped appearance (no caret, no jitter) */
+    .wordmark__char {
+      opacity: 0;
+      animation: wm-char-in 1ms linear forwards;
+      animation-delay: calc(0.2s + var(--ci) * 0.045s);
+    }
+    /* Beat 2: the colon ink-dries in, breathing tempo — the page's one breathing moment */
+    .wordmark__dot {
+      opacity: 0;
+      transform: translateY(-2px);
+      animation: wm-colon-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.85s forwards;
+    }
+    /* Beat 3: "art" types */
+    .wordmark__char--tail {
+      animation-delay: calc(1.5s + var(--ci) * 0.05s);
+    }
+  }
+
+  @keyframes wm-char-in {
+    to { opacity: 1; }
+  }
+  @keyframes wm-colon-in {
+    to { opacity: 1; transform: translateY(0); }
   }
 </style>
