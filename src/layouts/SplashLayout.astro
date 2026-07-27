@@ -156,6 +156,15 @@ const selfHref = Astro.url.pathname;
     color: var(--color-accent);
   }
 
+  .splash__line {
+    display: block;
+    overflow: hidden;
+  }
+
+  .splash__line-inner {
+    display: inline-block;
+  }
+
   .splash__rule {
     border: none;
     border-top: 1.5px solid var(--color-rule);
@@ -369,6 +378,97 @@ const selfHref = Astro.url.pathname;
 
   .splash__cta:hover {
     background: var(--color-accent);
+  }
+
+  /* CTA letter-roll (hover-only gesture on the page; entrance is a clip reveal) */
+  .cta-roll {
+    position: relative;
+    display: block;
+    overflow: hidden;
+  }
+
+  .cta-roll__face {
+    display: block;
+    white-space: pre;
+  }
+
+  .cta-roll__face--bottom {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .cta-roll__letter {
+    display: inline-block;
+    white-space: pre;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .cta-roll__letter {
+      transition: transform 0.35s cubic-bezier(0.2, 0, 0, 1);
+      transition-delay: calc(var(--li) * 18ms);
+    }
+    .cta-roll__face--bottom .cta-roll__letter {
+      transform: translateY(100%);
+    }
+    .splash__cta:hover .cta-roll__face--top .cta-roll__letter,
+    .splash__cta:focus-visible .cta-roll__face--top .cta-roll__letter {
+      transform: translateY(-100%);
+    }
+    .splash__cta:hover .cta-roll__face--bottom .cta-roll__letter,
+    .splash__cta:focus-visible .cta-roll__face--bottom .cta-roll__letter {
+      transform: translateY(0);
+    }
+  }
+
+  /* === ENTRANCE CHAIN (typographic, CSS-only, fires once) ===
+     Beats: wordmark types (Wordmark.astro) → colon ink-dry (breathing, the one
+     breathing moment) → "art" types → tagline masked line rise → hairline grows
+     → status → value prop → contact → CTA clip reveal. Sequential by design. */
+  @media (prefers-reduced-motion: no-preference) {
+    .splash__line-inner {
+      transform: translateY(110%);
+      animation: line-rise 0.35s cubic-bezier(0.2, 0, 0, 1) forwards;
+    }
+    .splash__line:nth-child(1) .splash__line-inner { animation-delay: 1.8s; }
+    .splash__line:nth-child(2) .splash__line-inner { animation-delay: 1.88s; }
+
+    .splash__rule {
+      transform: scaleX(0);
+      transform-origin: left;
+      animation: rule-grow 0.35s cubic-bezier(0.2, 0, 0, 1) 2.1s forwards;
+    }
+
+    .splash__status,
+    .splash__value-prop,
+    .splash__contact-label,
+    .splash__footer-linkedin {
+      opacity: 0;
+      transform: translateY(12px);
+      animation: fade-rise 0.35s cubic-bezier(0.2, 0, 0, 1) forwards;
+    }
+    .splash__status { animation-delay: 2.2s; }
+    .splash__value-prop { animation-delay: 2.3s; }
+    .splash__contact-label { animation-delay: 2.45s; }
+    .splash__footer-linkedin { animation-delay: 2.6s; }
+
+    .splash__cta {
+      clip-path: inset(0 100% 0 0);
+      animation: cta-reveal 0.35s cubic-bezier(0.2, 0, 0, 1) 2.55s forwards;
+    }
+  }
+
+  @keyframes line-rise {
+    to { transform: translateY(0); }
+  }
+  @keyframes rule-grow {
+    to { transform: scaleX(1); }
+  }
+  @keyframes fade-rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes cta-reveal {
+    to { clip-path: inset(0 0 0 0); }
   }
 
   .splash__footer-actions {
