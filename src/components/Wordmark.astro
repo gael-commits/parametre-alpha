@@ -60,13 +60,13 @@ const tail = 'art'.split('');
   @keyframes wm-colon-in {
     to { opacity: 1; transform: translateY(0); }
   }
-  /* Two soft pulses: opacity eases through each phase on the S-curve
-     instead of hard on/off switches. */
+  /* Two pulses with envelope asymmetry: a fast S-curved attack, then a decay
+     10% longer than the attack riding the afterglow curve. */
   @keyframes wm-cursor-blink {
     0% { opacity: 0; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    25% { opacity: 1; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    23.81% { opacity: 1; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
     50% { opacity: 0; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    75% { opacity: 1; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    73.81% { opacity: 1; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
     100% { opacity: 0; }
   }
 </style>
