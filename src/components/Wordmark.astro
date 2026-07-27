@@ -4,7 +4,7 @@ const tail = 'art'.split('');
 ---
 <div class="wordmark" aria-label="parametre:art">
   <span aria-hidden="true">
-    {head.map((c, i) => <span class="wordmark__char" style={`--ci:${i}`}>{c}</span>)}<span class="wordmark__dot">:</span>{tail.map((c, i) => <span class="wordmark__char wordmark__char--tail" style={`--ci:${i}`}>{c}</span>)}
+    {head.map((c, i) => <span class="wordmark__char" style={`--ci:${i}`}>{c}</span>)}<span class="wordmark__dot">:</span>{tail.map((c, i) => <span class="wordmark__char wordmark__char--tail" style={`--ci:${i}`}>{c}</span>)}<span class="wordmark__cursor">_</span>
   </span>
 </div>
 
@@ -42,6 +42,16 @@ const tail = 'art'.split('');
     .wordmark__char--tail {
       animation-delay: calc(1.5s + var(--ci) * 0.05s);
     }
+    /* Beat 4: underscore cursor blinks twice (on-off-on-off), then gone */
+    .wordmark__cursor {
+      opacity: 0;
+      animation: wm-cursor-blink 0.8s linear 1.75s forwards;
+    }
+  }
+
+  /* Outside the media query the cursor never shows (reduced-motion + end state) */
+  .wordmark__cursor {
+    opacity: 0;
   }
 
   @keyframes wm-char-in {
@@ -49,5 +59,11 @@ const tail = 'art'.split('');
   }
   @keyframes wm-colon-in {
     to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes wm-cursor-blink {
+    0%, 24.9% { opacity: 1; }
+    25%, 49.9% { opacity: 0; }
+    50%, 74.9% { opacity: 1; }
+    75%, 100% { opacity: 0; }
   }
 </style>
