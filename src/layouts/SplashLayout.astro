@@ -39,6 +39,32 @@ const selfHref = Astro.url.pathname;
   </head>
   <body>
     <slot />
+    <script>
+      // Fit the tagline so each intended line stays one visual line: measure at
+      // natural width (nowrap), shrink font-size by the worst line's overflow
+      // ratio, floor at readability (lower floor on small screens, where a wrap
+      // is the lesser evil). Runs after fonts load, well before the 3s sweep.
+      const fitTagline = () => {
+        const p = document.querySelector('.splash__tagline');
+        if (!p) return;
+        const inners = [...p.querySelectorAll('.splash__line-inner')];
+        p.style.fontSize = '';
+        inners.forEach((el) => (el.style.whiteSpace = 'nowrap'));
+        const base = parseFloat(getComputedStyle(p).fontSize);
+        const ratio = Math.min(1, ...inners.map((el) => p.clientWidth / el.scrollWidth));
+        const floor = window.innerWidth < 768 ? 12 : 16;
+        const size = Math.max(floor, base * ratio);
+        if (ratio < 1) p.style.fontSize = size.toFixed(2) + 'px';
+        // If even the floor cannot hold the line, concede the wrap.
+        inners.forEach((el) => { if (el.scrollWidth > p.clientWidth + 1) el.style.whiteSpace = ''; });
+      };
+      let fitRaf = 0;
+      const queueFit = () => { cancelAnimationFrame(fitRaf); fitRaf = requestAnimationFrame(fitTagline); };
+      document.fonts.ready.then(queueFit);
+      window.addEventListener('resize', queueFit);
+      const taglineEl = document.querySelector('.splash__tagline');
+      if (taglineEl) new ResizeObserver(queueFit).observe(taglineEl.parentElement || document.body);
+    </script>
   </body>
 </html>
 
