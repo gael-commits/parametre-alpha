@@ -47,7 +47,15 @@ const typed = (word, start, base) => {
   });
 };
 
-const head = typed('parametre', 0.2, 0.027);
+const span = (word, base) =>
+  [...word].slice(1).reduce((t, ch, i) => t + base * MULT[classify(word[i], ch)], 0);
+
+// "parametre" is timed BACKWARD from a fixed end so the 69ms breath before the
+// colon survives any change to typing speed — retune HEAD_BASE alone and the
+// word grows leftward instead of crowding the colon.
+const HEAD_BASE = 0.0297;
+const HEAD_END = 0.4309;
+const head = typed('parametre', +(HEAD_END - span('parametre', HEAD_BASE)).toFixed(4), HEAD_BASE);
 const tail = typed('art', 0.8, 0.03);
 // The cursor rides in as the next keystroke after the final "t" — same instant,
 // so its perceived stutter comes only from the slow head of the S-curve attack.
