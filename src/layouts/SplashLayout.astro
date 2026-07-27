@@ -158,11 +158,22 @@ const selfHref = Astro.url.pathname;
 
   .splash__line {
     display: block;
-    overflow: hidden;
   }
 
   .splash__line-inner {
     display: inline-block;
+    position: relative;
+  }
+
+  /* Ink cover for the tagline block sweep: grows from the left edge to full
+     text width, then shrinks away to the right, uncovering the line. */
+  .splash__line-inner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--color-text);
+    transform: scaleX(0);
+    transform-origin: left;
   }
 
   .splash__rule {
@@ -426,17 +437,24 @@ const selfHref = Astro.url.pathname;
      breathing moment) → "art" types → tagline masked line rise → hairline grows
      → status → value prop → contact → CTA clip reveal. Sequential by design. */
   @media (prefers-reduced-motion: no-preference) {
+    /* Tagline block sweep: cover expands left→full (0–50%), shrinks →right
+       (50–100%); the text flips visible at the midpoint, under the cover. */
     .splash__line-inner {
-      transform: translateY(110%);
-      animation: line-rise 0.35s cubic-bezier(0.2, 0, 0, 1) forwards;
+      opacity: 0;
+      animation: line-flip 0.9s linear forwards;
     }
-    .splash__line:nth-child(1) .splash__line-inner { animation-delay: 1.8s; }
-    .splash__line:nth-child(2) .splash__line-inner { animation-delay: 1.88s; }
+    .splash__line-inner::after {
+      animation: cover-sweep 0.9s forwards;
+    }
+    .splash__line:nth-child(1) .splash__line-inner,
+    .splash__line:nth-child(1) .splash__line-inner::after { animation-delay: 2.5s; }
+    .splash__line:nth-child(2) .splash__line-inner,
+    .splash__line:nth-child(2) .splash__line-inner::after { animation-delay: 2.7s; }
 
     .splash__rule {
       transform: scaleX(0);
       transform-origin: left;
-      animation: rule-grow 0.35s cubic-bezier(0.2, 0, 0, 1) 2.1s forwards;
+      animation: rule-grow 0.35s cubic-bezier(0.2, 0, 0, 1) 3.5s forwards;
     }
 
     .splash__status,
@@ -447,19 +465,26 @@ const selfHref = Astro.url.pathname;
       transform: translateY(12px);
       animation: fade-rise 0.35s cubic-bezier(0.2, 0, 0, 1) forwards;
     }
-    .splash__status { animation-delay: 2.2s; }
-    .splash__value-prop { animation-delay: 2.3s; }
-    .splash__contact-label { animation-delay: 2.45s; }
-    .splash__footer-linkedin { animation-delay: 2.6s; }
+    .splash__status { animation-delay: 3.6s; }
+    .splash__value-prop { animation-delay: 3.7s; }
+    .splash__contact-label { animation-delay: 3.85s; }
+    .splash__footer-linkedin { animation-delay: 4s; }
 
     .splash__cta {
       clip-path: inset(0 100% 0 0);
-      animation: cta-reveal 0.35s cubic-bezier(0.2, 0, 0, 1) 2.55s forwards;
+      animation: cta-reveal 0.35s cubic-bezier(0.2, 0, 0, 1) 3.95s forwards;
     }
   }
 
-  @keyframes line-rise {
-    to { transform: translateY(0); }
+  @keyframes line-flip {
+    0%, 49.9% { opacity: 0; }
+    50%, 100% { opacity: 1; }
+  }
+  @keyframes cover-sweep {
+    0% { transform: scaleX(0); transform-origin: left; }
+    50% { transform: scaleX(1); transform-origin: left; }
+    50.01% { transform: scaleX(1); transform-origin: right; }
+    100% { transform: scaleX(0); transform-origin: right; }
   }
   @keyframes rule-grow {
     to { transform: scaleX(1); }
