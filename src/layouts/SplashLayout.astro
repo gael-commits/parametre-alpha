@@ -40,6 +40,57 @@ const selfHref = Astro.url.pathname;
   <body>
     <slot />
     <script>
+      // REVIEW SWITCH (temporary, for choosing the CTA idle-nudge variant):
+      //   ?nudge=a  glint · ?nudge=b  settle · ?nudge=c  beacon
+      //   &at=2     fire 2s after the entrance chain settles (default: 10s)
+      // `at` is measured FROM the chain settling, not from page load, so it can
+      // never be set earlier than the button's own entrance.
+      // No param = no nudge at all, i.e. today's behaviour.
+      {
+        const CHAIN_END = 5.79; // CTA entrance completes (5.4372s + 0.35s)
+        const root = document.documentElement;
+        const q = new URLSearchParams(location.search);
+        const variant = q.get('nudge');
+        if (variant) root.dataset.nudge = variant;
+        const at = parseFloat(q.get('at'));
+        if (Number.isFinite(at)) {
+          root.style.setProperty('--nudge-at', `${(CHAIN_END + Math.max(0, at)).toFixed(2)}s`);
+        }
+        const lag = parseFloat(q.get('lag')); // variant D: glint offset, in ms
+        if (Number.isFinite(lag)) root.style.setProperty('--nudge-lag', `${Math.max(0, lag)}ms`);
+
+        // Review-only replay bar: fire any variant on demand, as many times as
+        // you like, without waiting for the timer or reloading. Only ever built
+        // when ?nudge= is present, so it cannot appear for a real visitor.
+        if (variant) {
+          window.addEventListener('DOMContentLoaded', () => {
+            const bar = document.createElement('div');
+            bar.className = 'nudge-bar';
+            bar.innerHTML =
+              '<span class="nudge-bar__label">nudge</span>' +
+              ['a', 'b', 'c', 'd'].map((v) =>
+                `<button type="button" data-play="${v}"${v === variant ? ' class="is-current"' : ''}>${v}</button>`
+              ).join('') +
+              '<button type="button" data-play="off">off</button>';
+            document.body.appendChild(bar);
+
+            const cta = document.querySelector('.splash__cta');
+            bar.addEventListener('click', (e) => {
+              const v = e.target instanceof HTMLElement && e.target.dataset.play;
+              if (!v) return;
+              // Restart from zero: drop the variant, force reflow, re-apply with
+              // a 0s delay so the gesture plays immediately on every click.
+              delete root.dataset.nudge;
+              root.style.setProperty('--nudge-at', '0s');
+              void cta.offsetWidth;
+              bar.querySelectorAll('button').forEach((b) => b.classList.toggle('is-current', b.dataset.play === v));
+              if (v !== 'off') root.dataset.nudge = v;
+            });
+          });
+        }
+      }
+    </script>
+    <script>
       // Fit the tagline so each intended line stays one visual line: measure at
       // natural width (nowrap), shrink font-size by the worst line's overflow
       // ratio, floor at readability (lower floor on small screens, where a wrap
@@ -105,6 +156,14 @@ const selfHref = Astro.url.pathname;
     --space-m: clamp(1rem, 0.8rem + 0.6vw, 1.5rem);
     --space-l: clamp(1.5rem, 1.2rem + 1vw, 2.5rem);
     --space-xl: clamp(2rem, 1.5rem + 1.5vw, 3.5rem);
+
+    /* CTA idle-nudge (attract cue). ~10s after the entrance chain settles.
+       Override live with ?at=3 while reviewing variants. */
+    --nudge-at: 16s;
+    /* Variant D: how long after the settle STARTS the glint begins. 0 = both
+       fire together, reading as ONE gesture (light catches the surface while it
+       is actually moving). Override live with &lag=<ms> to separate them. */
+    --nudge-lag: 0ms;
   }
 
   /* === BASE === */
@@ -399,6 +458,9 @@ const selfHref = Astro.url.pathname;
 
   /* === CTA BUTTON === */
   .splash__cta {
+    --cta-delay: 5.4372s; /* single source of truth: entrance + nudge both read it */
+    position: relative;
+    overflow: hidden;
     font-family: var(--font-body);
     font-size: var(--text-xs);
     font-weight: 500;
@@ -411,6 +473,15 @@ const selfHref = Astro.url.pathname;
     padding: 10px 24px;
     cursor: pointer;
     transition: background-color 0.3s var(--ease);
+  }
+
+  /* Overlay used by the nudge variants (sweep for A, luminance lift for C). */
+  .splash__cta::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
   }
 
   .splash__cta:hover {
@@ -500,8 +571,145 @@ const selfHref = Astro.url.pathname;
 
     .splash__cta {
       clip-path: inset(0 100% 0 0);
-      animation: cta-reveal 0.35s cubic-bezier(0.2, 0, 0, 1) 5.4372s forwards;
+      animation: cta-reveal 0.35s cubic-bezier(0.2, 0, 0, 1) var(--cta-delay) forwards;
     }
+  }
+
+  /* === CTA IDLE NUDGE (attract cue) ===
+     LIVE BEHAVIOUR = variant D: the button is nudged and light catches it while
+     it moves, both starting together so they read as ONE gesture. Fires ONCE,
+     ~10s after the entrance chain settles. Peripheral vision catches motion and
+     luminance rather than colour, which is why this is built small on purpose.
+     Dead under reduced-motion.
+
+     Alternatives kept for re-audition: ?nudge=a (glint only) · b (settle only)
+     · c (beacon) · off (disable). ?nudge=<any> also injects a replay bar.
+     Tuning: &at=<s after chain settles> · &lag=<ms between settle and glint>. */
+  @media (prefers-reduced-motion: no-preference) {
+
+    /* Default (no query param) and explicit ?nudge=d */
+    html:not([data-nudge]) .splash__cta,
+    html[data-nudge='d'] .splash__cta {
+      animation:
+        cta-reveal 0.35s cubic-bezier(0.2, 0, 0, 1) var(--cta-delay) forwards,
+        nudge-settle 0.56s linear var(--nudge-at);
+    }
+    html:not([data-nudge]) .splash__cta::after,
+    html[data-nudge='d'] .splash__cta::after {
+      right: auto;
+      width: 55%;
+      background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+      animation: nudge-glint 0.75s cubic-bezier(0.65, 0, 0.35, 1)
+        calc(var(--nudge-at) + var(--nudge-lag)) forwards;
+    }
+
+    /* A — GLINT: a narrow light band sweeps across, the shiny-pickup cue. */
+    [data-nudge='a'] .splash__cta::after {
+      right: auto;
+      width: 55%;
+      background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+      animation: nudge-glint 0.75s cubic-bezier(0.65, 0, 0.35, 1) var(--nudge-at) forwards;
+    }
+
+
+    /* B — SETTLE: anticipation, overshoot, settle. Motion blur only at peak
+       velocity. Rotation 0.35deg (≈0.9px at the corners) — felt, not seen. */
+    [data-nudge='b'] .splash__cta {
+      animation:
+        cta-reveal 0.35s cubic-bezier(0.2, 0, 0, 1) var(--cta-delay) forwards,
+        nudge-settle 0.56s linear var(--nudge-at);
+    }
+
+    /* C — BEACON: smaller settle, no rotation, plus a luminance lift and one
+       pass of the letter-roll — the button wakes up and demonstrates itself. */
+    [data-nudge='c'] .splash__cta {
+      animation:
+        cta-reveal 0.35s cubic-bezier(0.2, 0, 0, 1) var(--cta-delay) forwards,
+        nudge-beacon 0.6s linear var(--nudge-at);
+    }
+    [data-nudge='c'] .splash__cta::after {
+      background: #fff;
+      animation: nudge-lift 0.6s cubic-bezier(0.2, 0, 0, 1) var(--nudge-at);
+    }
+    [data-nudge='c'] .cta-roll__face--top .cta-roll__letter {
+      animation: nudge-roll-out 0.72s cubic-bezier(0.2, 0, 0, 1) calc(var(--nudge-at) + var(--li) * 18ms);
+    }
+    [data-nudge='c'] .cta-roll__face--bottom .cta-roll__letter {
+      animation: nudge-roll-in 0.72s cubic-bezier(0.2, 0, 0, 1) calc(var(--nudge-at) + var(--li) * 18ms);
+    }
+  }
+
+  /* Review-only replay bar (injected by JS only when ?nudge= is present). */
+  .nudge-bar {
+    position: fixed;
+    bottom: 12px;
+    right: 12px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background: rgba(26, 26, 26, 0.92);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  }
+  .nudge-bar__label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    margin-right: 4px;
+  }
+  .nudge-bar button {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  .nudge-bar button:hover {
+    background: rgba(255, 255, 255, 0.24);
+  }
+  .nudge-bar button.is-current {
+    background: var(--color-accent);
+  }
+
+  @keyframes nudge-glint {
+    0% { transform: translateX(-180%); opacity: 0; }
+    12% { opacity: 1; }
+    88% { opacity: 1; }
+    100% { transform: translateX(280%); opacity: 0; }
+  }
+  @keyframes nudge-settle {
+    0% { transform: none; filter: none; }
+    12% { transform: scale(0.995) rotate(-0.15deg); }
+    38% { transform: scale(1.022) rotate(0.35deg) translateY(-1px); filter: blur(0.6px); }
+    64% { transform: scale(0.997) rotate(-0.1deg); filter: none; }
+    100% { transform: none; }
+  }
+  @keyframes nudge-beacon {
+    0% { transform: none; }
+    36% { transform: scale(1.014) translateY(-1px); }
+    68% { transform: scale(0.998); }
+    100% { transform: none; }
+  }
+  @keyframes nudge-lift {
+    0%, 100% { opacity: 0; }
+    40% { opacity: 0.08; }
+  }
+  @keyframes nudge-roll-out {
+    0%, 100% { transform: translateY(0); }
+    42%, 58% { transform: translateY(-100%); }
+  }
+  @keyframes nudge-roll-in {
+    0%, 100% { transform: translateY(100%); }
+    42%, 58% { transform: translateY(0); }
   }
 
   @keyframes line-flip {
