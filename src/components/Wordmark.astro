@@ -50,20 +50,25 @@ const typed = (word, start, base) => {
 const span = (word, base) =>
   [...word].slice(1).reduce((t, ch, i) => t + base * MULT[classify(word[i], ch)], 0);
 
-// "parametre" is timed BACKWARD from a fixed end so the 69ms breath before the
-// colon survives any change to typing speed — retune HEAD_BASE alone and the
-// word grows leftward instead of crowding the colon.
-const HEAD_BASE = 0.0297;
-const HEAD_END = 0.4309;
-const head = typed('parametre', +(HEAD_END - span('parametre', HEAD_BASE)).toFixed(4), HEAD_BASE);
-const tail = typed('art', 0.8, 0.03);
+/* The wordmark timeline is expressed as DURATIONS AND GAPS, not absolute
+   timestamps. Retune a typing speed and everything after it is pushed along the
+   timeline automatically, with the breaths — and therefore the cadence — intact. */
+const HEAD_START = 0.177;
+const HEAD_BASE = 0.031185;         // typing pace of "parametre"
+const BREATH_BEFORE_COLON = 0.0691; // wordmark lands, then the mark resolves
+const BREATH_AFTER_COLON = 0.3;     // the colon's own moment, before "art"
+const TAIL_BASE = 0.03;             // typing pace of "art"
+
+const head = typed('parametre', HEAD_START, HEAD_BASE);
+const colonAt = +(head[head.length - 1].at + BREATH_BEFORE_COLON).toFixed(4);
+const tail = typed('art', +(colonAt + BREATH_AFTER_COLON).toFixed(4), TAIL_BASE);
 // The cursor rides in as the next keystroke after the final "t" — same instant,
 // so its perceived stutter comes only from the slow head of the S-curve attack.
 const cursorAt = tail[tail.length - 1].at;
 ---
 <div class="wordmark" aria-label="parametre:art">
   <span aria-hidden="true">
-    {head.map(({ ch, at }) => <span class="wordmark__char" style={`--at:${at}s`}>{ch}</span>)}<span class="wordmark__dot">:</span>{tail.map(({ ch, at }) => <span class="wordmark__char" style={`--at:${at}s`}>{ch}</span>)}<span class="wordmark__cursor" style={`--at:${cursorAt}s`}>_</span>
+    {head.map(({ ch, at }) => <span class="wordmark__char" style={`--at:${at}s`}>{ch}</span>)}<span class="wordmark__dot" style={`--at:${colonAt}s`}>:</span>{tail.map(({ ch, at }) => <span class="wordmark__char" style={`--at:${at}s`}>{ch}</span>)}<span class="wordmark__cursor" style={`--at:${cursorAt}s`}>_</span>
   </span>
 </div>
 
@@ -95,7 +100,7 @@ const cursorAt = tail[tail.length - 1].at;
     .wordmark__dot {
       opacity: 0;
       transform: translateY(-2px);
-      animation: wm-colon-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+      animation: wm-colon-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--at) forwards;
     }
     /* Beat 4: underscore cursor, two pulses, entering on the final keystroke */
     .wordmark__cursor {
