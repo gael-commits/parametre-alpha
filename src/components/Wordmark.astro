@@ -45,7 +45,7 @@ const tail = 'art'.split('');
     /* Beat 4: underscore cursor blinks twice (on-off-on-off), slow and even */
     .wordmark__cursor {
       opacity: 0;
-      animation: wm-cursor-blink 2.75s linear 1.32s forwards;
+      animation: wm-cursor-blink 2.58s linear 1.32s forwards;
     }
   }
 
@@ -61,15 +61,15 @@ const tail = 'art'.split('');
     to { opacity: 1; transform: translateY(0); }
   }
   /* Two pulses with envelope asymmetry (fast S-curved attack, 10% longer
-     decay on the afterglow curve) separated by a rest: a 10%-of-cycle hold
-     at zero between the envelopes (inter-onset interval > pulse length),
+     decay on the afterglow curve) separated by a rest: an 80ms humanization-scale hold
+     at zero between the envelopes (felt, not seen — de-quantize, not pause) (inter-onset interval > pulse length),
      which phrases the pair as "blink, blink" instead of "blinkblink". */
   @keyframes wm-cursor-blink {
     0% { opacity: 0; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    21.64% { opacity: 1; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
-    45.45% { opacity: 0; }
-    54.55% { opacity: 0; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    76.18% { opacity: 1; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+    23.06% { opacity: 1; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+    48.45% { opacity: 0; }
+    51.55% { opacity: 0; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    74.61% { opacity: 1; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
     100% { opacity: 0; }
   }
 </style>
