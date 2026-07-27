@@ -45,7 +45,7 @@ const tail = 'art'.split('');
     /* Beat 4: underscore cursor blinks twice (on-off-on-off), slow and even */
     .wordmark__cursor {
       opacity: 0;
-      animation: wm-cursor-blink 2.5s linear 1.32s forwards;
+      animation: wm-cursor-blink 2.75s linear 1.32s forwards;
     }
   }
 
@@ -60,13 +60,16 @@ const tail = 'art'.split('');
   @keyframes wm-colon-in {
     to { opacity: 1; transform: translateY(0); }
   }
-  /* Two pulses with envelope asymmetry: a fast S-curved attack, then a decay
-     10% longer than the attack riding the afterglow curve. */
+  /* Two pulses with envelope asymmetry (fast S-curved attack, 10% longer
+     decay on the afterglow curve) separated by a rest: a 10%-of-cycle hold
+     at zero between the envelopes (inter-onset interval > pulse length),
+     which phrases the pair as "blink, blink" instead of "blinkblink". */
   @keyframes wm-cursor-blink {
     0% { opacity: 0; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    23.81% { opacity: 1; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
-    50% { opacity: 0; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
-    73.81% { opacity: 1; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+    21.64% { opacity: 1; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
+    45.45% { opacity: 0; }
+    54.55% { opacity: 0; animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1); }
+    76.18% { opacity: 1; animation-timing-function: cubic-bezier(0.2, 0, 0, 1); }
     100% { opacity: 0; }
   }
 </style>
