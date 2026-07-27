@@ -42,10 +42,10 @@ const tail = 'art'.split('');
     .wordmark__char--tail {
       animation-delay: calc(1.5s + var(--ci) * 0.05s);
     }
-    /* Beat 4: underscore cursor blinks twice (on-off-on-off), then gone */
+    /* Beat 4: underscore cursor blinks twice (on-off-on-off), slow and even */
     .wordmark__cursor {
       opacity: 0;
-      animation: wm-cursor-blink 0.8s linear 1.75s forwards;
+      animation: wm-cursor-blink 1.6s linear 1.75s forwards;
     }
   }
 
