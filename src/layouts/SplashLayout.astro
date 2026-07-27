@@ -439,16 +439,18 @@ const selfHref = Astro.url.pathname;
   @media (prefers-reduced-motion: no-preference) {
     /* Tagline block sweep: cover expands left→full (0–50%), shrinks →right
        (50–100%); the text flips visible at the midpoint, under the cover. */
-    .splash__line-inner {
+    /* Text hidden until the sweep midpoint; the cover animates independently
+       so it is VISIBLE while it grows (it must never pop in fully grown). */
+    .splash__line-text {
       opacity: 0;
       animation: line-flip 1.5s linear forwards;
     }
     .splash__line-inner::after {
       animation: cover-sweep 1.5s forwards;
     }
-    .splash__line:nth-child(1) .splash__line-inner,
+    .splash__line:nth-child(1) .splash__line-text,
     .splash__line:nth-child(1) .splash__line-inner::after { animation-delay: 3.3s; }
-    .splash__line:nth-child(2) .splash__line-inner,
+    .splash__line:nth-child(2) .splash__line-text,
     .splash__line:nth-child(2) .splash__line-inner::after { animation-delay: 3.6s; }
 
     .splash__rule {
